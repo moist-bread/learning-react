@@ -16,7 +16,8 @@ export default function Home() {
 			>
 				<option value="none">None</option>
 				<option value="tech">Technology</option>
-				<option value="animal">Animal</option>
+				<option value="animals">Animals</option>
+				<option value="astronomy">Astronomy</option>
 			</select>
 			<HubFeed>
 				<Facts theme={highlightTheme} />
@@ -40,9 +41,9 @@ function Facts({ theme } : {theme: string}) : React.JSX.Element[] {
 
 	const facts = [
 		{ id:1, theme:"tech", title: "When Did Phones Get So Smart?", author: "Redditor", fact: "The very first Smartphone was the IBM Simon, released on 1994. It combined the functions of a mobile phone and a personal digital assistant (PDA).", image: "/ibmsimon.jpg" },
-		{ id:2, theme:"animal", title: "Quick Animal Fact", author: "A Marine Biologist Probably", fact: "Everything in the universe is either an Octopus or not an Octopus.", image: "/octopus.jpeg" },
-		{ id:3, theme:"animal", title: "Title 3", author: "Author 3", fact: "Fact Explanation 3", image: "/favicon.ico" },
-		{ id:4, theme:"animal", title: "Small but Hefty", author: "Nosferatu", fact: "At birth a Baby Bat weighs 25% of the Adult Bat. Which is quite helfty comparing to Human Babies with only 5%.", image: "/babybat.jpg" }
+		{ id:2, theme:"animals", title: "Quick Animal Fact", author: "A Marine Biologist Probably", fact: "Everything in the universe is either an Octopus or not an Octopus.", image: "/octopus.jpeg" },
+		{ id:3, theme:"astronomy", title: "All Star", author: "Yet Another Redditor", fact: "There are more Hydrogen atoms in one molecule of Water than there are Stars in the whole Solar System. ", image: "/solarsystem.jpg" },
+		{ id:4, theme:"animals", title: "Small but Hefty", author: "Nosferatu", fact: "At birth a Baby Bat weighs 25% of the Adult Bat. Which is quite helfty comparing to Human Babies with only 5%.", image: "/babybat.jpg" }
 	];
 
 	const listItems = facts.map( post =>
