@@ -17,24 +17,6 @@ export default function Game() {
 		setNextPlayer((turn + 1) % 2 == 1 ? 'X' : 'O');
 	}
 
-	function createHistoryList() {
-		return (
-			history.map((squares, move: number) => {
-				
-				let description: string;
-				if (move > 0)
-					description = "Go to move #" + move;
-				else
-					description = "Reset to game start";
-				
-				return (
-					<li key={move}>
-						<button onClick={() => jumpTo(move + 1)}>{description}</button>
-					</li>);
-			})
-		);
-	}
-
 	function jumpTo (move: number) {
 		const tempHistory = history.slice(0, move);
 		setHistory(tempHistory);
@@ -55,7 +37,7 @@ export default function Game() {
 				</div>
 				<div className="game-info">
 					<div className="status">history list</div>
-					<ol>{createHistoryList()}</ol>
+					<HistoryList history={[...history]} jumpTo={jumpTo}/>
 				</div>
 			</div>
 		</>
@@ -106,7 +88,7 @@ function GameBoard({ finished, nextPlayer, grid, onPlayerAct }
 	);
 }
 
-function checkWinner(grid: Array<string>): string {
+function checkWinner(grid: Array<string>) : string {
 
 	let lines : Array<Array<number>> = [ [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6] ];
 
@@ -126,5 +108,23 @@ function Square({ value, onSquareClick } : {value: string, onSquareClick: () => 
 		>
 			{value}
 		</button>
+	);
+}
+
+function HistoryList({ history, jumpTo } : {history: Array<Array<string>>, jumpTo: (move: number) => void}) : React.JSX.Element[] {
+	return (
+		history.map((state, move: number) => {
+			
+			let description: string;
+			if (move > 0)
+				description = "Go to move #" + move;
+			else
+				description = "Reset to game start";
+			
+			return (
+				<li key={move}>
+					<button onClick={() => jumpTo(move + 1)}>{description}</button>
+				</li>);
+		})
 	);
 }

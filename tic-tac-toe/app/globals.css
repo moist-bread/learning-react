@@ -87,6 +87,10 @@ ul {
 	padding-inline-start: 20px;
 }
 
+li {
+    list-style-type: none;
+}
+
 * {
 	box-sizing: border-box;
 }
