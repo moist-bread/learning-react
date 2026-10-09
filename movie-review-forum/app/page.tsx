@@ -1,22 +1,44 @@
 'use client';
 import { useState } from 'react';
 import { ReviewInformation, startingReviews } from './reviews';
+import CreateButton from './create';
+
+// !! TODO
+// -- styling for create form
+// -- create form clear on submit
+// -- think about filtering options
 
 export default function Home() {
 	
 	const [reviews, setReview] = useState<Array<ReviewInformation>>(startingReviews);
 	// const [filteredReviews, setFilteredReviews] = useState(reviews);
 
+	function handleReviewCreate(info: ReviewInformation) {
+		info.id = reviews[reviews.length - 1].id + 1;
+		setReview([...reviews, info]);
+		alert("CLICKED SUBMIT");
+	}
+
+	function handleBoostReview(id: number) {
+		let tempReviews = reviews.map((r) => {
+			if (r.id != id)
+				return (r);
+			else
+				return ({...r, hype: r.hype + 1}); 
+		});
+		setReview(tempReviews);
+	}
+
 	return (
 		<>
 			<Header/>
 			<Forum>
-				<SideBar>
+				<SideBar title="FILTERS">
 					<Filters/>
 				</SideBar>
-				<Feed reviews={reviews} />
-				<SideBar>
-					<Popular/>
+				<Feed reviews={reviews} createReview={handleReviewCreate} boostReview={handleBoostReview} />
+				<SideBar title="POPULAR">
+					<Popular reviews={reviews}/>
 				</SideBar>
 			</Forum>
 		</>
@@ -40,20 +62,25 @@ function Forum({ children } : {children: Array<React.JSX.Element>}) {
 	);
 }
 
-function SideBar({ children } : {children: React.JSX.Element}) {
+function SideBar({ title, children } : {title: string, children: React.JSX.Element}) {
 	return (
-		<div className="bg-(--highlight) border rounded-lg w-1/4 p-3">
-			<h2 className="font-sans text-xl mb-5">IM A SIDE BAR</h2>
-			{children}
+		<div className="bg-(--highlight) border w-1/4 p-4 pt-18">
+			<div className="bg-(--background) border rounded-b-xl h-full">
+				<h2 className="bg-(--accent) border-b font-mono font-bold text-xl px-4 py-1">{title}</h2>
+				<div className='p-7'>
+					{children}
+				</div>
+			</div>
 		</div>
 	);
 }
 
-function Feed({ reviews } : {reviews: Array<ReviewInformation>}) {
+function Feed({ reviews, createReview, boostReview } : 
+	{reviews: Array<ReviewInformation>, createReview: (info: ReviewInformation) => void, boostReview: (id: number) => void}) {
 
 	const reviewArray = reviews.map( (r) =>
 		<li key={r.id} className="pt-8">
-			<Review review={r} />
+			<Review review={r} boostReview={boostReview}/>
 		</li>
 	); 
 
@@ -61,7 +88,7 @@ function Feed({ reviews } : {reviews: Array<ReviewInformation>}) {
 		<div className="w-1/2 px-5 flex flex-col justify-center-safe text-center">
 			<div className="flex justify-between place-items-center font-mono">
 				<h2 className="bg-(--accent) font-bold text-xl px-4 py-1">USER REVIEWS</h2>
-				<CreateButton/>
+				<CreateButton createReview={createReview} />
 			</div>
 			<ul>
 				{reviewArray}
@@ -70,66 +97,7 @@ function Feed({ reviews } : {reviews: Array<ReviewInformation>}) {
 	);
 }
 
-function CreateButton() {
-	return (
-		<>
-			<button command="show-modal" commandfor="create-review-popup" 
-				className="border rounded-lg px-4 py-1 text-center bg-(--highlight) text-(--foreground) font-bold hover:cursor-pointer">
-				CREATE YOUR REVIEW
-			</button>
-
-			<dialog id="create-review-popup" className='border rounded-lg border-(--foreground) w-2/3 h-2/3 bg-(--accent) place-self-center p-10 text-(--foreground) backdrop:bg-(--background) backdrop:opacity-50'>
-				<div>
-					<div className="flex justify-between place-items-center font-mono mb-8">
-						<h2 className="bg-(--highlight) font-bold text-xl px-4 py-1">CREATE YOUR REVIEW</h2>
-						<button command="close" commandfor="create-review-popup" 
-							className="border rounded-lg px-4 py-1 text-center bg-(--highlight) font-bold hover:cursor-pointer">
-							CLOSE
-						</button>
-					</div>
-					<CreateForm/>
-				</div>
-			</dialog>
-		</>
-	);
-}
-
-function CreateForm() {
-	return (
-		<form /* onSubmit={} */>
-			<label>
-				Rating:
-				<select>
-				<option value="nothing">None…</option>
-				<option>0</option>
-				<option>1</option>
-				<option>2</option>
-				</select>
-			</label>
-			<br></br>
-			<br></br>
-			<label>Movie Name:</label>
-			<input type="text" id="mname" name="mname" className='bg-(--background)' required></input>
-			<br></br>
-			<br></br>
-			<label>Movie Year:</label>
-			<input type="number" id="myear" name="myear" className='bg-(--background)' required></input>
-			<br></br>
-			<br></br>
-			<label>Rating out of 10:</label>
-			<input type="number" id="myear" name="myear" className='bg-(--background)' required></input>
-			<br></br>
-			<br></br>
-			<label>Your Review:</label>
-			<input type="text" id="myear" name="myear" className='bg-(--background)' required></input>
-			<div>
-				<button className="border rounded-lg px-4 py-1 text-center bg-(--highlight) font-bold mt-8 hover:cursor-pointer" type="submit">Confirm</button>
-			</div>
-		</form>
-	);
-}
-
-function Review({ review } : {review: ReviewInformation}) {
+function Review({ review, boostReview } : {review: ReviewInformation, boostReview: (id: number) => void}) {
 	
 	return (
 		<div className="border rounded-lg bg-(--background) w-full p-10 pb-8">
@@ -141,13 +109,15 @@ function Review({ review } : {review: ReviewInformation}) {
 					<p className="text-(--highlight) font-mono text-sm">({review.movieYear})</p>
 				</div>
 				<div className="flex flex-col text-left w-3/4 pt-1 gap-3">
-					<Rating rating={review.rating} />
+					<h2 className="font-symbol font-bold text-3xl">{ratingStars(review.rating)}</h2>
 					<div className="border rounded-lg border-(--highlight) p-4">
 						<p className="text-wrap">{review.review}</p>
 						<h4 className="text-(--highlight) font-mono text-sm mt-5">by {review.reviewerName}</h4>
 					</div>
 					<span className="flex text-(--highlight) font-mono text-sm mt-3 justify-between place-items-center">
-						<button className="border rounded-lg px-4 py-1 text-center bg-(--highlight) text-(--foreground) hover:cursor-pointer">{review.hype} boost</button>
+						<button className="border rounded-lg px-4 py-1 text-center bg-(--highlight) text-(--foreground) hover:cursor-pointer"
+							onClick={() => boostReview(review.id)}>
+							{review.hype} boosts</button>
 						<h2 className="font-sans text-sm text-(--highlight) text-right tracking-wide italic opacity-75">movie review forum</h2>
 					</span>
 				</div>
@@ -157,7 +127,7 @@ function Review({ review } : {review: ReviewInformation}) {
 	);
 }
 
-function Rating({ rating } : {rating: number} ) {
+function ratingStars(rating: number) : string {
 
 	let stars : string = "";
 	const value : number = (rating > 10 ? 10 : Math.round(rating))
@@ -165,9 +135,7 @@ function Rating({ rating } : {rating: number} ) {
 		stars += "★";
 	stars += (value % 2 ? "⯪" : "")
 	stars = stars.padEnd(5, "☆");
-	return (
-		<h2 className="font-symbol font-bold text-3xl">{stars}</h2>
-	);
+	return (stars);
 }
 
 function Filters() {
@@ -178,10 +146,45 @@ function Filters() {
 	);
 }
 
-function Popular() {
+function Popular({ reviews } : {reviews: Array<ReviewInformation>}) {
+
+	let topReviews = [...reviews];
+	console.log("starting: ",topReviews);
+	topReviews.sort((a, b) => b.hype - a.hype);
+	console.log("sorted: ",topReviews);
+	topReviews = topReviews.slice(0, (topReviews.length < 3 ? topReviews.length : 3))
+	console.log("cut: ", topReviews);
+
+	const reviewArray = topReviews.map( (r) =>
+		<li key={r.id} className="pt-8">
+			<ThumbnailReview review={r} />
+		</li>
+	); 
+
 	return (
-		<div>
-			<p>POPULAR</p>
+		<div className="w-full flex flex-col justify-center-safe text-center">
+			<h2 className="font-mono text-(--highlight) font-bold text-base">HIGHLY ACLAIMED REVIEWS</h2>
+			<ul>
+				{reviewArray}
+			</ul>
+		</div>
+	);
+}
+
+function ThumbnailReview({ review } : {review: ReviewInformation}) {
+	return (
+		<div className="border rounded-lg bg-(--background) w-full p-6 pb-8 flex flex-col gap-3 text-left">
+			<div className='flex flex-row place-items-center gap-2 font-mono'>
+				<h2 className="font-bold text-lg">{review.movieName}</h2>
+				<p className="text-(--highlight) text-sm">({review.movieYear})</p>
+			</div>
+			<h2 className="font-symbol font-bold text-xl">{ratingStars(review.rating)}</h2>
+			<div className="border rounded-lg border-(--highlight) p-4 font-sans">
+				<p className="text-wrap">{review.review}</p>
+				<h4 className="text-(--highlight) text-sm mt-5">by {review.reviewerName}</h4>
+			</div>
+			<h2 className="font-sans text-sm text-(--highlight) text-right tracking-wide italic">
+				{review.hype} boosts</h2>
 		</div>
 	);
 }
