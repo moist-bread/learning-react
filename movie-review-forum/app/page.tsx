@@ -1,22 +1,22 @@
 'use client';
 import { useState } from 'react';
 import { ReviewInformation, startingReviews } from './reviews';
+import { FilteringOptions, startingFilters, FilteringRating } from './filter';
+import { SideBar, Filters, Popular } from './sidebars';
 import CreateButton from './create';
 
-// !! TODO
-// -- styling for create form
-// -- create form clear on submit
+// !! TO DO
 // -- think about filtering options
 
 export default function Home() {
 	
 	const [reviews, setReview] = useState<Array<ReviewInformation>>(startingReviews);
-	// const [filteredReviews, setFilteredReviews] = useState(reviews);
+	const [filters, setFilters] = useState<FilteringOptions>(startingFilters);
 
 	function handleReviewCreate(info: ReviewInformation) {
 		info.id = reviews[reviews.length - 1].id + 1;
 		setReview([...reviews, info]);
-		alert("CLICKED SUBMIT");
+		console.log("updated: ", reviews);
 	}
 
 	function handleBoostReview(id: number) {
@@ -29,20 +29,34 @@ export default function Home() {
 		setReview(tempReviews);
 	}
 
+	function handleRatingFilterToggle(key: keyof FilteringRating) {
+		const tempFiltersRate = {...filters.filteringRating};
+		tempFiltersRate[key] = !tempFiltersRate[key];
+		setFilters({...filters, filteringRating: tempFiltersRate});
+		console.log("updated filters: ", filters);
+	}
+
 	return (
 		<>
 			<Header/>
 			<Forum>
 				<SideBar title="FILTERS">
-					<Filters/>
+					<Filters filters={filters} ratingFilterToggle={handleRatingFilterToggle}/>
 				</SideBar>
-				<Feed reviews={reviews} createReview={handleReviewCreate} boostReview={handleBoostReview} />
+				<Feed reviews={applyFilters(filters, reviews)} createReview={handleReviewCreate} boostReview={handleBoostReview} />
 				<SideBar title="POPULAR">
 					<Popular reviews={reviews}/>
 				</SideBar>
 			</Forum>
 		</>
 	);
+}
+
+function applyFilters (filters: FilteringOptions, reviews: Array<ReviewInformation>) : Array<ReviewInformation> {
+	//const filteredReviews = [...reviews];
+	const filteredReviews = [...reviews].reverse();
+
+	return (filteredReviews);
 }
 
 function Header() {
@@ -62,18 +76,6 @@ function Forum({ children } : {children: Array<React.JSX.Element>}) {
 	);
 }
 
-function SideBar({ title, children } : {title: string, children: React.JSX.Element}) {
-	return (
-		<div className="bg-(--highlight) border w-1/4 p-4 pt-18">
-			<div className="bg-(--background) border rounded-b-xl h-full">
-				<h2 className="bg-(--accent) border-b font-mono font-bold text-xl px-4 py-1">{title}</h2>
-				<div className='p-7'>
-					{children}
-				</div>
-			</div>
-		</div>
-	);
-}
 
 function Feed({ reviews, createReview, boostReview } : 
 	{reviews: Array<ReviewInformation>, createReview: (info: ReviewInformation) => void, boostReview: (id: number) => void}) {
@@ -87,7 +89,7 @@ function Feed({ reviews, createReview, boostReview } :
 	return (
 		<div className="w-1/2 px-5 flex flex-col justify-center-safe text-center">
 			<div className="flex justify-between place-items-center font-mono">
-				<h2 className="bg-(--accent) font-bold text-xl px-4 py-1">USER REVIEWS</h2>
+				<h2 className="bg-(--accent) font-bold text-xl px-8 py-1">USER REVIEWS</h2>
 				<CreateButton createReview={createReview} />
 			</div>
 			<ul>
@@ -118,7 +120,8 @@ function Review({ review, boostReview } : {review: ReviewInformation, boostRevie
 						<button className="border rounded-lg px-4 py-1 text-center bg-(--highlight) text-(--foreground) hover:cursor-pointer"
 							onClick={() => boostReview(review.id)}>
 							{review.hype} boosts</button>
-						<h2 className="font-sans text-sm text-(--highlight) text-right tracking-wide italic opacity-75">movie review forum</h2>
+						<h2 className="font-sans text-sm text-(--highlight) text-right tracking-wide italic opacity-75">
+							movie review forum</h2>
 					</span>
 				</div>
 
@@ -127,7 +130,7 @@ function Review({ review, boostReview } : {review: ReviewInformation, boostRevie
 	);
 }
 
-function ratingStars(rating: number) : string {
+export function ratingStars(rating: number) : string {
 
 	let stars : string = "";
 	const value : number = (rating > 10 ? 10 : Math.round(rating))
@@ -136,55 +139,4 @@ function ratingStars(rating: number) : string {
 	stars += (value % 2 ? "⯪" : "")
 	stars = stars.padEnd(5, "☆");
 	return (stars);
-}
-
-function Filters() {
-	return (
-		<div>
-			<p>FILTERS</p>
-		</div>
-	);
-}
-
-function Popular({ reviews } : {reviews: Array<ReviewInformation>}) {
-
-	let topReviews = [...reviews];
-	console.log("starting: ",topReviews);
-	topReviews.sort((a, b) => b.hype - a.hype);
-	console.log("sorted: ",topReviews);
-	topReviews = topReviews.slice(0, (topReviews.length < 3 ? topReviews.length : 3))
-	console.log("cut: ", topReviews);
-
-	const reviewArray = topReviews.map( (r) =>
-		<li key={r.id} className="pt-8">
-			<ThumbnailReview review={r} />
-		</li>
-	); 
-
-	return (
-		<div className="w-full flex flex-col justify-center-safe text-center">
-			<h2 className="font-mono text-(--highlight) font-bold text-base">HIGHLY ACLAIMED REVIEWS</h2>
-			<ul>
-				{reviewArray}
-			</ul>
-		</div>
-	);
-}
-
-function ThumbnailReview({ review } : {review: ReviewInformation}) {
-	return (
-		<div className="border rounded-lg bg-(--background) w-full p-6 pb-8 flex flex-col gap-3 text-left">
-			<div className='flex flex-row place-items-center gap-2 font-mono'>
-				<h2 className="font-bold text-lg">{review.movieName}</h2>
-				<p className="text-(--highlight) text-sm">({review.movieYear})</p>
-			</div>
-			<h2 className="font-symbol font-bold text-xl">{ratingStars(review.rating)}</h2>
-			<div className="border rounded-lg border-(--highlight) p-4 font-sans">
-				<p className="text-wrap">{review.review}</p>
-				<h4 className="text-(--highlight) text-sm mt-5">by {review.reviewerName}</h4>
-			</div>
-			<h2 className="font-sans text-sm text-(--highlight) text-right tracking-wide italic">
-				{review.hype} boosts</h2>
-		</div>
-	);
 }
