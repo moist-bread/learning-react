@@ -1,12 +1,13 @@
 'use client';
 import { useState } from 'react';
 import { ReviewInformation, startingReviews } from './reviews';
-import { FilteringOptions, startingFilters, FilteringRating } from './filter';
+import { FilteringOptions, startingFilters, FilteringRating, FilteringHype, FilteringMovieYear } from './filter';
 import { SideBar, Filters, Popular } from './sidebars';
 import CreateButton from './create';
 
 // !! TO DO
-// -- think about filtering options
+// -- do movie year filters 
+// -- use movie year filters 
 
 export default function Home() {
 	
@@ -29,10 +30,21 @@ export default function Home() {
 		setReview(tempReviews);
 	}
 
-	function handleRatingFilterToggle(key: keyof FilteringRating) {
-		const tempFiltersRate = {...filters.filteringRating};
-		tempFiltersRate[key] = !tempFiltersRate[key];
-		setFilters({...filters, filteringRating: tempFiltersRate});
+	function handleRatingFilterToggle(key: keyof FilteringRating, value: boolean) {
+		setFilters((f) => {
+			const tempFiltersRate = {...f.filteringRating};
+			tempFiltersRate[key] = value;
+			return ({...f, filteringRating: tempFiltersRate});
+		});
+		console.log("updated filters: ", filters);
+	}
+
+	function handleHypeFilterToggle(key: keyof FilteringHype, value: boolean) {
+		setFilters((f) => {
+			const tempFiltersHype = {...f.filteringHype};
+			tempFiltersHype[key] = value;
+			return ({...f, filteringHype: tempFiltersHype});
+		});
 		console.log("updated filters: ", filters);
 	}
 
@@ -41,7 +53,7 @@ export default function Home() {
 			<Header/>
 			<Forum>
 				<SideBar title="FILTERS">
-					<Filters filters={filters} ratingFilterToggle={handleRatingFilterToggle}/>
+					<Filters filters={filters} ratingFilterToggle={handleRatingFilterToggle} hypeFilterToggle={handleHypeFilterToggle} />
 				</SideBar>
 				<Feed reviews={applyFilters(filters, reviews)} createReview={handleReviewCreate} boostReview={handleBoostReview} />
 				<SideBar title="POPULAR">
@@ -53,10 +65,34 @@ export default function Home() {
 }
 
 function applyFilters (filters: FilteringOptions, reviews: Array<ReviewInformation>) : Array<ReviewInformation> {
-	//const filteredReviews = [...reviews];
-	const filteredReviews = [...reviews].reverse();
 
-	return (filteredReviews);
+	let filteredReviews: Array<ReviewInformation> = [];
+
+	// -- step 1: apply rating filter
+	let rateFilterEntries = Object.values(filters.filteringRating);
+
+	// -- step 2: apply hype filter
+	let hypeFilterEntries = Object.values(filters.filteringHype);
+
+	if(!rateFilterEntries.every((e) => e == true) || !hypeFilterEntries.every((e) => e == true))
+	{
+		reviews.forEach((r) => {
+			if (rateFilterEntries[r.rating] &&
+				hypeFilterEntries[(r.hype >= 60 ? 4 : Math.trunc(r.hype / 15))])
+				filteredReviews.push(r);
+		});
+	}
+	else
+		filteredReviews = [...reviews];
+	
+
+	
+	// console.log("all hype toggles TRUE");
+	// console.log("filtering out specified hype");
+	// console.log("review that passes");
+	// console.log("review that DOESNT pass");
+
+	return (filteredReviews.reverse());
 }
 
 function Header() {
@@ -87,14 +123,14 @@ function Feed({ reviews, createReview, boostReview } :
 	); 
 
 	return (
-		<div className="w-1/2 px-5 flex flex-col justify-center-safe text-center">
+		<div className="w-1/2 px-5 flex flex-col text-center">
 			<div className="flex justify-between place-items-center font-mono">
 				<h2 className="bg-(--accent) font-bold text-xl px-8 py-1">USER REVIEWS</h2>
 				<CreateButton createReview={createReview} />
 			</div>
-			<ul>
-				{reviewArray}
-			</ul>
+			{reviewArray.length > 0 ? 
+				<ul>{reviewArray}</ul> : 
+				<h2 className="font-mono font-bold text-lg pt-16">NO REVIEWS MEET THE FILTERS</h2>}
 		</div>
 	);
 }

@@ -36,7 +36,6 @@ function CreateForm({ createReview } : {createReview: (info: ReviewInformation) 
 				const form = e.target;
 				const formData = new FormData(form);
 				const formJson = Object.fromEntries(formData.entries());
-				console.log(formJson);
 				createReview(
 				{
 					id: 0,

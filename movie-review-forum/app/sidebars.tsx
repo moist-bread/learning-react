@@ -1,5 +1,5 @@
 import { ReviewInformation } from './reviews';
-import { FilteringOptions, FilteringRating } from './filter';
+import { FilteringOptions, FilteringRating, FilteringHype, FilteringMovieYear } from './filter';
 import { ratingStars } from './page';
 
 export function SideBar({ title, children } : {title: string, children: React.JSX.Element}) {
@@ -15,16 +15,16 @@ export function SideBar({ title, children } : {title: string, children: React.JS
 	);
 }
 
-export function Filters({ filters, ratingFilterToggle } : {filters: FilteringOptions, ratingFilterToggle: (key: keyof FilteringRating) => void}) {
+export function Filters({ filters, ratingFilterToggle, hypeFilterToggle } : 
+	{filters: FilteringOptions, ratingFilterToggle: (key: keyof FilteringRating, value: boolean) => void, hypeFilterToggle: (key: keyof FilteringHype, value: boolean) => void}) {
 	
 	let rateFilterEntries = Object.entries(filters.filteringRating);
-	
-	let ratingFilterToggles = rateFilterEntries.map((v, i) => {
+	let ratingFilterToggles = rateFilterEntries.map((e, i) => {
 		return(
 			<div key={i} className='flex flex-row gap-3 pb-1'>
-				<input type="checkbox" defaultChecked={v[1]} id={i.toString()} name={i.toString()}
+				<input type="checkbox" checked={e[1]} id={i.toString()} name={e[0]}
 					onChange={() => {
-						ratingFilterToggle(v[0] as keyof FilteringRating);
+						ratingFilterToggle(e[0] as keyof FilteringRating, !e[1]);
 					}}/>
 				<label className="font-symbol font-bold text-xl tracking-wide">{ratingStars(i)}</label>
 				<p className='font-mono text-sm'>({i})</p>
@@ -32,19 +32,66 @@ export function Filters({ filters, ratingFilterToggle } : {filters: FilteringOpt
 		);
 	});
 
-	return (
-		<div>
-			<h2 className="font-mono text-(--highlight) font-bold text-base">BE PICKY WITH THE REVIEWS</h2>
-			<div className='pt-6'>
-				<div className="border rounded-lg bg-(--background) w-full p-6 pb-8 flex flex-col gap-3 text-left">
-					<h2 className="font-mono font-bold text-lg">RATINGS</h2>
-					<form>
-						{ratingFilterToggles}
-					</form>
-					<button className="font-mono text-base text-left text-(--highlight) tracking-wide underline hover:cursor-pointer">
-					reset selection</button>
-				</div>
+	let hypeFilterEntries = Object.entries(filters.filteringHype);
+	let hypeFilterToggles = hypeFilterEntries.map((e, i) => {
+		return(
+			<div key={i} className='flex flex-row gap-3 pb-1'>
+				<input type="checkbox" checked={e[1]} id={i.toString()} name={e[0]}
+					onChange={() => {
+						hypeFilterToggle(e[0] as keyof FilteringHype, !e[1]);
+					}}/>
+				<label className="font-mono font-bold text-lg">{i * 15} - { i !=  hypeFilterEntries.length - 1 && ((i + 1) * 15) - 1}</label>
+				{i ==  hypeFilterEntries.length - 1 && <p className='font-symbol font-bold text-3xl'>∞</p>}
 			</div>
+		);
+	});
+
+	return (
+		<>
+			<h2 className="font-mono text-(--highlight) font-bold text-base">BE PICKY WITH THE REVIEWS</h2>
+			<FilterMenu title='RATINGS'>
+				<form>
+					{ratingFilterToggles}
+				</form>
+				<button className="font-mono text-base text-left text-(--highlight) tracking-wide underline hover:cursor-pointer"
+					onClick={() => {
+						rateFilterEntries.forEach((e) => {
+							ratingFilterToggle(e[0] as keyof FilteringRating, true);})
+					}}>
+					reset selection</button>
+			</FilterMenu>
+			<FilterMenu title='NUMBER OF BOOSTS'>
+				<form>
+					{hypeFilterToggles}
+				</form>
+				<button className="font-mono text-base text-left text-(--highlight) tracking-wide underline hover:cursor-pointer"
+					onClick={() => {
+						hypeFilterEntries.forEach((e) => {
+							hypeFilterToggle(e[0] as keyof FilteringHype, true);})
+					}}>
+					reset selection</button>
+			</FilterMenu>
+
+			<FilterMenu title='MOVIE RELEASE YEAR'>
+				<form>
+					{/* hypeFilterToggles */}
+				</form>
+				<button className="font-mono text-base text-left text-(--highlight) tracking-wide underline hover:cursor-pointer"
+					onClick={() => {
+						/* hypeFilterEntries.forEach((e) => {
+							hypeFilterToggle(e[0] as keyof FilteringHype, true);}) */
+					}}>
+					reset selection</button>
+			</FilterMenu>
+		</>
+	);
+}
+
+function FilterMenu({ title, children } : {title: string, children: Array<React.JSX.Element>}) {
+	return (
+		<div className="border rounded-lg bg-(--background) w-full mt-6 p-6 flex flex-col gap-3 mb-6 text-left">
+			<h2 className="font-mono font-bold text-lg">{title}</h2>
+			{children}
 		</div>
 	);
 }
@@ -62,18 +109,18 @@ export function Popular({ reviews } : {reviews: Array<ReviewInformation>}) {
 	); 
 
 	return (
-		<div className="w-full flex flex-col justify-center-safe text-center">
+		<>
 			<h2 className="font-mono text-(--highlight) font-bold text-base">HIGHLY ACLAIMED REVIEWS</h2>
 			<ul>
 				{reviewArray}
 			</ul>
-		</div>
+		</>
 	);
 }
 
 function ThumbnailReview({ review } : {review: ReviewInformation}) {
 	return (
-		<div className="border rounded-lg bg-(--background) w-full p-6 pb-8 flex flex-col gap-3 text-left">
+		<div className="border rounded-lg bg-(--background) w-full p-6 flex flex-col gap-3 text-left">
 			<div className='flex flex-row place-items-center gap-2 font-mono'>
 				<h2 className="font-bold text-lg">{review.movieName}</h2>
 				<p className="text-(--highlight) text-sm">({review.movieYear})</p>

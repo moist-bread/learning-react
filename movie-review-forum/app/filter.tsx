@@ -1,17 +1,7 @@
 export interface FilteringOptions {
-	filteringMovieYear: FilteringMovieYear,
 	filteringRating: FilteringRating,
 	filteringHype: FilteringHype
-}
-
-interface FilteringMovieYear {
-	twentytwenty : boolean,
-	twentyten : boolean,
-	twenty : boolean,
-	nineties : boolean,
-	eighties : boolean,
-	seventies : boolean,
-	older : boolean
+	filteringMovieYear: FilteringMovieYear,
 }
 
 export interface FilteringRating {
@@ -28,24 +18,25 @@ export interface FilteringRating {
 	ten : boolean
 }
 
-interface FilteringHype {
-	hundredplus : boolean,
-	lessfifty : boolean,
+export interface FilteringHype {
+	lessfithteen : boolean,
 	lessthirty : boolean,
-	lessten : boolean
+	lessfortyfive : boolean,
+	lesssixty : boolean,
+	plussixty : boolean
+}
+
+export interface FilteringMovieYear {
+	twentytwenty : boolean,
+	twentyten : boolean,
+	twenty : boolean,
+	nineties : boolean,
+	eighties : boolean,
+	seventies : boolean,
+	older : boolean
 }
 
 export const startingFilters : FilteringOptions = {
-
-	filteringMovieYear: {
-		twentytwenty : true,
-		twentyten : true,
-		twenty : true,
-		nineties : true,
-		eighties : true,
-		seventies : true,
-		older : true
-	},
 
 	filteringRating: {
 		zero : true,
@@ -62,9 +53,20 @@ export const startingFilters : FilteringOptions = {
 	},
 
 	filteringHype: {
-		hundredplus : true,
-		lessfifty : true,
+		lessfithteen : true,
 		lessthirty : true,
-		lessten : true
+		lessfortyfive : true,
+		lesssixty : true,
+		plussixty : true
+	},
+
+	filteringMovieYear: {
+		twentytwenty : true,
+		twentyten : true,
+		twenty : true,
+		nineties : true,
+		eighties : true,
+		seventies : true,
+		older : true
 	}
 };
