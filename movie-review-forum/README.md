@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FUN FACT HUB
 
-## Getting Started
+## About
 
-First, run the development server:
+Following the spirit of the previous project, [Fun Fact Hub](../fun-fact-hub/README.md), I decided to create a slighty more ambitious project that would explore everything until now but specially focus on the ways to add Interaction from [React Documentation - Adding Interactivity](https://react.dev/learn/adding-interactivity).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<img
+	src="demo/movie-review-forum-demo-1.png"
+	alt="tic-tac-toe-demo-1"
+	style="display: block; 
+		   margin-left: auto;
+		   margin-right: auto;
+		   width: auto;">
+</img>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The concepts tested were the following:
+- [Responding to Events](https://react.dev/learn/responding-to-events)
+- [Queueing a Series of State Updates](https://react.dev/learn/queueing-a-series-of-state-updates)
+- [Updating Objects in State](https://react.dev/learn/updating-objects-in-state)
+- [Updating Arrays in State](https://react.dev/learn/updating-arrays-in-state)
+- [JavaScript Math Reference](https://www.w3schools.com/jsref/jsref_obj_math.asp)
+- [JavaScript Object Reference](https://www.w3schools.com/jsref/jsref_obj_object.asp)
+- Interfaces - [TypeScript Object Types](https://www.geeksforgeeks.org/typescript/typescript-object-types/)
+- [JavaScript Object Reference](https://www.w3schools.com/jsref/jsref_obj_object.asp)
+- Using "keyof" - [How to Cast a String to keyof in TypeScript](https://www.webdevtutor.net/blog/typescript-cast-string-to-keyof)
+- [Responsive design](https://tailwindcss.com/docs/responsive-design) with tailwindcss
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<img
+	src="demo/movie-review-forum-demo-2.png"
+	alt="tic-tac-toe-demo-2"
+	style="display: block; 
+		   margin-left: auto;
+		   margin-right: auto;
+		   width: auto;">
+</img>
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The Forum starts with 5 reviews by default but the user can then add new reviews about their movie of choice. The user can "boost" reviews so they can become more popular and show up on the "POPULAR" side bar dedicated to the top 3 most boosted reviews. The shown reviews on the Feed can also be filtered based on the star Rating given, the number of Boosts the review has recieved and the movie's Release Year (the filtering doesn't affect the "POPULAR" side bar).
