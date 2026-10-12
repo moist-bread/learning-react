@@ -32,7 +32,6 @@ export interface FilteringMovieYear {
 	twenty : boolean,
 	nineties : boolean,
 	eighties : boolean,
-	seventies : boolean,
 	older : boolean
 }
 
@@ -43,11 +42,11 @@ export const startingFilters : FilteringOptions = {
 		one : true,
 		two : true,
 		three : true,
-		four : false,
+		four : true,
 		five : true,
 		six : true,
 		seven : true,
-		eight : false,
+		eight : true,
 		nine : true,
 		ten : true
 	},
@@ -66,7 +65,6 @@ export const startingFilters : FilteringOptions = {
 		twenty : true,
 		nineties : true,
 		eighties : true,
-		seventies : true,
 		older : true
 	}
 };

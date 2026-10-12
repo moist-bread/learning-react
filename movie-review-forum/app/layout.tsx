@@ -30,7 +30,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 			lang="en"
 			className={`${robotoMono.variable} ${robotoSans.variable} ${notoSansSymbols.variable} h-full antialiased`}
 		>
-			<body className="min-h-full flex flex-col text-center">{children}</body>
+			<head>
+				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+			</head>
+			<body className="min-h-full flex flex-col font-mono">{children}</body>
 		</html>
 	);
 }

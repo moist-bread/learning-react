@@ -8,15 +8,15 @@ export default function CreateButton({ createReview } : {createReview: (info: Re
 	return (
 		<>
 			<button command="show-modal" commandfor="create-review-popup" 
-				className="border rounded-lg px-4 py-1 text-center bg-(--accent) text-(--foreground) font-bold hover:cursor-pointer">
+				className="border rounded-lg px-4 py-1 bg-(--highlight) text-(--foreground) font-bold hover:cursor-pointer">
 				CREATE REVIEW
 			</button>
 
-			<dialog id="create-review-popup" className='border rounded-lg border-(--foreground) w-2/5 h-2/3 bg-(--background) place-self-center p-10 text-(--foreground) backdrop:bg-(--background) backdrop:opacity-50'>
-				<div className="flex justify-between place-items-center font-mono mb-8">
+			<dialog id="create-review-popup" className='border rounded-lg border-(--foreground) w-2/5 min-w-md h-2/3 bg-(--background) place-self-center p-10 text-(--foreground) backdrop:bg-(--background) backdrop:opacity-50'>
+				<div className="flex justify-between place-items-center mb-8">
 					<h2 className="bg-(--accent) font-bold text-xl px-8 py-1">CREATE YOUR REVIEW</h2>
 					<button command="close" commandfor="create-review-popup" 
-						className="border rounded-lg px-3 py-1 text-center bg-(--accent) font-bold hover:cursor-pointer">
+						className="border rounded-lg px-3 py-1 bg-(--highlight) font-bold hover:cursor-pointer">
 						X
 					</button>
 				</div>
@@ -28,7 +28,7 @@ export default function CreateButton({ createReview } : {createReview: (info: Re
 
 function CreateForm({ createReview } : {createReview: (info: ReviewInformation) => void}) {
 	return (
-		<form className='flex flex-col gap-5 text-left' 
+		<form className='flex flex-col gap-5' 
 			id="create-form" method="post"
 			onSubmit={(e: React.SubmitEvent) => {
 
@@ -89,7 +89,7 @@ function CreateForm({ createReview } : {createReview: (info: ReviewInformation) 
 				<textarea id="review" name="review" className='bg-(--background) border placeholder:font-mono placeholder:text-gray-500 px-2 py-1 min-h-24 font-sans' placeholder='Write your review here...' required/>
 			</label>
 			<div>
-				<button className="border rounded-lg px-4 py-1 text-center bg-(--highlight) font-bold mt-5 hover:cursor-pointer" 
+				<button className="border rounded-lg px-4 py-1 bg-(--highlight) font-bold mt-5 hover:cursor-pointer" 
 					type="submit">
 					SUBMIT</button>
 			</div>
