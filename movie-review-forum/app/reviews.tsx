@@ -1,15 +1,15 @@
-export interface  ReviewInformation {
-	id: number,
-	posterPath: string,
-	movieName: string,
-	movieYear: number,
-	rating: number,
-	review: string,
-	reviewerName: string,
-	hype: number
+export interface ReviewInformation {
+	id: number;
+	posterPath: string;
+	movieName: string;
+	movieYear: number;
+	rating: number;
+	review: string;
+	reviewerName: string;
+	hype: number;
 }
 
-export const startingReviews : Array<ReviewInformation> = [
+export const startingReviews: Array<ReviewInformation> = [
 	{
 		id: 1,
 		posterPath: "saw2004.jpg",
@@ -18,7 +18,7 @@ export const startingReviews : Array<ReviewInformation> = [
 		rating: 7,
 		review: "Definitely the best type of movie to watch with company it was so fun",
 		reviewerName: "person",
-		hype: 51
+		hype: 51,
 	},
 
 	{
@@ -29,9 +29,9 @@ export const startingReviews : Array<ReviewInformation> = [
 		rating: 10,
 		review: "music as a comforting place. i see you. you see me.",
 		reviewerName: "person",
-		hype: 0
+		hype: 0,
 	},
-	
+
 	{
 		id: 3,
 		posterPath: "labyrinth1986.jpg",
@@ -40,9 +40,9 @@ export const startingReviews : Array<ReviewInformation> = [
 		rating: 7,
 		review: "A magical movie",
 		reviewerName: "person",
-		hype: 0
+		hype: 0,
 	},
-	
+
 	{
 		id: 4,
 		posterPath: "soundofmetal2019.jpg",
@@ -54,7 +54,7 @@ export const startingReviews : Array<ReviewInformation> = [
 		The film smash cuts to Ruben performing at another metal concert that very night, seemingly disregarding the specialist's advice.\
 		It's a stunning depiction of that innate human desire to maintain normality, to act like nothing's wrong, to carry on as though everything's fine.",
 		reviewerName: "person",
-		hype: 15
+		hype: 15,
 	},
 
 	{
@@ -65,6 +65,6 @@ export const startingReviews : Array<ReviewInformation> = [
 		rating: 7,
 		review: "I like the part where they try to catch him.",
 		reviewerName: "person",
-		hype: 34
-	}
+		hype: 34,
+	},
 ];

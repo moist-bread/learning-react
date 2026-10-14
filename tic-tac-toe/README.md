@@ -24,6 +24,22 @@ The Tutorial follows a "learn by failing" structure that helped explore the logi
            width: auto;">
 </img>
 
+## Usage
+
+To install dependencies:
+
+```bash
+npm audit fix --force
+```
+```bash
+npm run build
+```
+To run the devolpment branch:
+
+```bash
+npm run dev
+```
+
 ## Resume of the Next.js deafult README.md
 
 ### Creating the Project and Running it

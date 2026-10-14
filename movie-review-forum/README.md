@@ -35,3 +35,19 @@ The concepts tested were the following:
 </img>
 
 The Forum starts with 5 reviews by default but the user can then add new reviews about their movie of choice. The user can "boost" reviews so they can become more popular and show up on the "POPULAR" side bar dedicated to the top 3 most boosted reviews. The shown reviews on the Feed can also be filtered based on the star Rating given, the number of Boosts the review has recieved and the movie's Release Year (the filtering doesn't affect the "POPULAR" side bar).
+
+## Usage
+
+To install dependencies:
+
+```bash
+npm audit fix --force
+```
+```bash
+npm run build
+```
+To run the devolpment branch:
+
+```bash
+npm run dev
+```

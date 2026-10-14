@@ -28,3 +28,18 @@ The concepts tested were the following:
 		   width: auto;">
 </img>
 
+## Usage
+
+To install dependencies:
+
+```bash
+npm audit fix --force
+```
+```bash
+npm run build
+```
+To run the devolpment branch:
+
+```bash
+npm run dev
+```

@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { Noto_Sans_Symbols_2, Roboto_Mono, Roboto_Serif } from "next/font/google";
+import {
+	Noto_Sans_Symbols_2,
+	Roboto_Mono,
+	Roboto_Serif,
+} from "next/font/google";
 
 import "./globals.css";
 
@@ -21,7 +25,8 @@ const notoSansSymbols = Noto_Sans_Symbols_2({
 
 export const metadata: Metadata = {
 	title: "movie-review-forum",
-	description: "created to try out interfaces in javascrpit and React useStates with filtering and interectavity",
+	description:
+		"created to try out interfaces in javascrpit and React useStates with filtering and interectavity",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -31,9 +36,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 			className={`${robotoMono.variable} ${robotoSans.variable} ${notoSansSymbols.variable} h-full antialiased`}
 		>
 			<head>
-				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+				<meta
+					name="viewport"
+					content="width=device-width, initial-scale=1.0"
+				/>
 			</head>
-			<body className="min-h-full flex flex-col font-mono">{children}</body>
+			<body className="min-h-full flex flex-col font-mono">
+				{children}
+			</body>
 		</html>
 	);
 }

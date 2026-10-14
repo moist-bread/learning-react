@@ -1,5 +1,5 @@
-'use client';
-import { useState } from 'react';
+"use client";
+import { useState } from "react";
 
 export default function Home() {
 	const [highlightTheme, setHighlightTheme] = useState("none");
@@ -10,9 +10,10 @@ export default function Home() {
 			<h2 className="font-sans text-xl m-5">HERE'S THE THING</h2>
 			<br />
 			<h2 className="font-mono text-xl m-5">HIGHLIGHT A THEME</h2>
-			<select className="border rounded-lg p-3 text-center w-xl self-center text-(--highlight) hover:cursor-pointer"
-					defaultValue="none"
-					onChange={e => setHighlightTheme(e.target.value)}
+			<select
+				className="border rounded-lg p-3 text-center w-xl self-center text-(--highlight) hover:cursor-pointer"
+				defaultValue="none"
+				onChange={(e) => setHighlightTheme(e.target.value)}
 			>
 				<option value="none">None</option>
 				<option value="tech">Technology</option>
@@ -26,45 +27,75 @@ export default function Home() {
 	);
 }
 
-function HubFeed({ children } : {children: React.JSX.Element}) {
-	
+function HubFeed({ children }: { children: React.JSX.Element }) {
 	return (
 		<div className="flex flex-col justify-center-safe text-center items-center">
-			<ul>
-				{children}
-			</ul>
+			<ul>{children}</ul>
 		</div>
 	);
 }
 
-function Facts({ theme } : {theme: string}) : React.JSX.Element[] {
-
+function Facts({ theme }: { theme: string }): React.JSX.Element[] {
 	const facts = [
-		{ id:1, theme:"tech", title: "When Did Phones Get So Smart?", author: "Redditor", fact: "The very first Smartphone was the IBM Simon, released on 1994. It combined the functions of a mobile phone and a personal digital assistant (PDA).", image: "/ibmsimon.jpg" },
-		{ id:2, theme:"animals", title: "Quick Animal Fact", author: "A Marine Biologist Probably", fact: "Everything in the universe is either an Octopus or not an Octopus.", image: "/octopus.jpeg" },
-		{ id:3, theme:"astronomy", title: "All Star", author: "Yet Another Redditor", fact: "There are more Hydrogen atoms in one molecule of Water than there are Stars in the whole Solar System. ", image: "/solarsystem.jpg" },
-		{ id:4, theme:"animals", title: "Small but Hefty", author: "Nosferatu", fact: "At birth a Baby Bat weighs 25% of the Adult Bat. Which is quite helfty comparing to Human Babies with only 5%.", image: "/babybat.jpg" }
+		{
+			id: 1,
+			theme: "tech",
+			title: "When Did Phones Get So Smart?",
+			author: "Redditor",
+			fact: "The very first Smartphone was the IBM Simon, released on 1994. It combined the functions of a mobile phone and a personal digital assistant (PDA).",
+			image: "/ibmsimon.jpg",
+		},
+		{
+			id: 2,
+			theme: "animals",
+			title: "Quick Animal Fact",
+			author: "A Marine Biologist Probably",
+			fact: "Everything in the universe is either an Octopus or not an Octopus.",
+			image: "/octopus.jpeg",
+		},
+		{
+			id: 3,
+			theme: "astronomy",
+			title: "All Star",
+			author: "Yet Another Redditor",
+			fact: "There are more Hydrogen atoms in one molecule of Water than there are Stars in the whole Solar System. ",
+			image: "/solarsystem.jpg",
+		},
+		{
+			id: 4,
+			theme: "animals",
+			title: "Small but Hefty",
+			author: "Nosferatu",
+			fact: "At birth a Baby Bat weighs 25% of the Adult Bat. Which is quite helfty comparing to Human Babies with only 5%.",
+			image: "/babybat.jpg",
+		},
 	];
 
-	const listItems = facts.map( post =>
-
-		<li className="border rounded-lg w-xl my-8 p-8 flex flex-col" key={post.id}>
+	const listItems = facts.map((post) => (
+		<li
+			className="border rounded-lg w-xl my-8 p-8 flex flex-col"
+			key={post.id}
+		>
 			<div className="text-left">
 				<h2 className="font-mono font-bold text-xl">{post.title}</h2>
-				<h4 className="text-(--highlight) font-mono text-sm mb-5">by {post.author}</h4>
+				<h4 className="text-(--highlight) font-mono text-sm mb-5">
+					by {post.author}
+				</h4>
 				<p>{post.fact}</p>
 			</div>
 			<div className="self-center max-w-md pt-8">
-				<img
-					src={post.image}
-				/>
+				<img src={post.image} />
 			</div>
 			<span className="flex text-(--highlight) font-mono text-sm mt-8 justify-between">
 				<p>FACT #{post.id}</p>
-				{post.theme == theme && <p className="font-bold bg-(--color-foreground) ">HIGHLIGHTED ★</p>}
+				{post.theme == theme && (
+					<p className="font-bold bg-(--color-foreground) ">
+						HIGHLIGHTED ★
+					</p>
+				)}
 			</span>
 		</li>
-	);
+	));
 
 	return listItems;
 }

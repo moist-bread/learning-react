@@ -15,7 +15,8 @@ const robotoSans = Roboto_Serif({
 
 export const metadata: Metadata = {
 	title: "fun-fact-hub",
-	description: "created to try out the challenges given by the official react.dev \"Passing Props to a Component\" article",
+	description:
+		'created to try out the challenges given by the official react.dev "Passing Props to a Component" article',
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -24,7 +25,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 			lang="en"
 			className={`${robotoMono.variable} ${robotoSans.variable} h-full antialiased`}
 		>
-			<body className="min-h-full flex flex-col justify-center-safe text-center mt-20">{children}</body>
+			<body className="min-h-full flex flex-col justify-center-safe text-center mt-20">
+				{children}
+			</body>
 		</html>
 	);
 }

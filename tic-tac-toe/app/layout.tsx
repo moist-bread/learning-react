@@ -15,7 +15,8 @@ const robotoMono = Roboto_Mono({
 
 export const metadata: Metadata = {
 	title: "tic-tac-toe",
-	description: "created by following the official react.dev \"Tutorial: Tic-Tac-Toe\"",
+	description:
+		'created by following the official react.dev "Tutorial: Tic-Tac-Toe"',
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -28,3 +29,4 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 		</html>
 	);
 }
+/*  */
