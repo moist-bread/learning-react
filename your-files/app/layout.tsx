@@ -40,8 +40,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 					name="viewport"
 					content="width=device-width, initial-scale=1.0"
 				/>
+				<link rel="stylesheet" href="https://unpkg.com/98.css" />
 			</head>
-			<body className="min-h-full flex flex-col font-mono">
+			<body className="min-h-full flex flex-col justify-center-safe items-center p-10">
 				{children}
 			</body>
 		</html>
