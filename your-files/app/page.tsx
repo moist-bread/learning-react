@@ -1,62 +1,130 @@
 "use client";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import Landing from "./landing";
+import Login from "./login";
+import Files from "./files";
+import { allUsers, UserAccount } from "./user_files";
+import { SelectedIdContext } from "./selectedIdContext";
 
-type viewType = "list" | "grid" | "large";
 type homeStates = "landing" | "login" | "files";
 
 export default function Home() {
 	const [homeState, setHomeState] = useState<homeStates>("landing");
-	const [user, setUser] = useState<string>("");
+	const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
+	function handleLogin(user: string, pass: string) {
+		let acc: UserAccount | undefined = undefined;
+		acc = allUsers.find((u) => u.userName === user);
+		console.log(acc);
+
+		let id: number | null = null;
+		if (typeof acc !== "undefined") {
+			if (pass != acc.password)
+				throw new Error();
+			id = acc.userId;
+			console.log(id);
+			setSelectedUserId(id);
+			setHomeState("files");
+		} else throw new Error();
+	}
+
+	let children: React.JSX.Element;
 	switch (homeState) {
-		case "login": {
-			return (
-				<Window>
-					<TitleBar title="Login..." />
-					<Frame>
-						<Login
-							handleLogin={(user: string) => {
-								setUser(user);
-								setHomeState("files");
-							}}
-						/>
-					</Frame>
-					<StatusBar user={user} />
-				</Window>
-			);
-		}
 		case "files": {
-			return (
-				<Window>
-					<TitleBar title="Your Files" />
-					<SettingsBar />
-					<Frame>
-						<Content />
-					</Frame>
-					<StatusBar user={user} />
-				</Window>
-			);
+			children = <Files />;
+			break;
+		}
+		case "login": {
+			children = <Login handleLogin={handleLogin} />;
+			break;
 		}
 		default:
-			return (
-				<Window>
-					<TitleBar title="Welcome..." />
-					<Frame>
-						<Landing handleClick={() => setHomeState("login")} />
-					</Frame>
-					<StatusBar user={user} />
-				</Window>
-			);
+			children = <Landing handleClick={() => setHomeState("login")} />;
 	}
-}
 
-function Window({ children }: { children: Array<React.JSX.Element> }) {
-	return <div className="window w-1/2">{children}</div>;
-}
-
-function TitleBar({ title }: { title: string }) {
 	return (
-		<div className="title-bar">
+		<SelectedIdContext value={selectedUserId}>
+			<Window homeState={homeState}>{children}</Window>
+		</SelectedIdContext>
+	);
+}
+
+type cords = {
+	x: number | null;
+	y: number | null;
+};
+
+function Window({
+	children,
+	homeState,
+}: {
+	children: React.JSX.Element;
+	homeState: homeStates;
+}) {
+	const [position, setPosition] = useState<cords>({ x: null, y: null });
+
+	let title: string;
+	switch (homeState) {
+		case "files": {
+			title = "Your Files";
+			break;
+		}
+		case "login": {
+			title = "Login...";
+			break;
+		}
+		default:
+			title = "Welcome...";
+	}
+
+	// -- not working
+	const stylePos =
+		(typeof position.x === "number" ? " left-" + position.x : "") +
+		(typeof position.y === "number" ? " top-" + position.y : "");
+
+	return (
+		<div className={"window w-1/2 min-w-sm" + stylePos}>
+			<TitleBar title={title} changePosition={setPosition} />
+			{children}
+			<StatusBar />
+		</div>
+	);
+}
+
+export function TitleBar({
+	title,
+	changePosition,
+}: {
+	title: string;
+	changePosition: (p: cords) => void;
+}) {
+	// -- implement window drag by title bar here
+	return (
+		<div
+			className="title-bar mb-1"
+			/* onMouseDown={(e) => {
+				console.log("onMouseDown");
+				let cx = e.clientX;
+				let cy = e.clientY;
+				console.log("cx: ", cx);
+				console.log("cy: ", cy);
+				document.onmouseup = () => {
+					document.onmouseup = null;
+					document.onmousemove = null;
+				};
+				document.onmousemove = (e) => {
+					const new_cx: number = e.clientX;
+					const new_cy: number = cy - e.clientY;
+					cx = e.clientX;
+					cy = e.clientY;
+					console.log("new_cx: ", new_cx);
+					console.log("new_cy: ", new_cy);
+					changePosition({ x: 0, y: 0 });
+					console.log("top-[" + new_cy + "px]");
+				};
+			}}
+			onDragEnd={(e) => console.log("onDragEnd")} */
+		>
 			<div className="title-bar-text">{title}</div>
 			<div className="title-bar-controls">
 				<button aria-label="Minimize" className="minimize"></button>
@@ -67,94 +135,43 @@ function TitleBar({ title }: { title: string }) {
 	);
 }
 
-function SettingsBar() {
-	return (
-		<div className="flex p-1 justify-between">
-			<div className="flex gap-2">
-				<button>File</button>
-				<button>View</button>
-				<button>Help</button>
-			</div>
-			<button>Profile</button>
-		</div>
-	);
-}
+export function StatusBar() {
+	const id = useContext(SelectedIdContext);
 
-function StatusBar({ user }: { user: string }) {
+	let acc: UserAccount | undefined = undefined;
+	if (typeof id === "number") {
+		acc = allUsers.find((u) => u.userId == id);
+		console.log(acc);
+	}
+	let user: string = "";
+	let totalFiles: number = 0;
+	if (typeof acc !== "undefined") {
+		user = acc.userName;
+		totalFiles = acc.fileSystem.length - 1;
+		console.log(user);
+	}
+
 	return (
 		<div className="status-bar">
-			<p className="status-bar-field">Total Files:</p>
+			<p className="status-bar-field">
+				{user === "" ? "No Files." : "Total Files: " + totalFiles}
+			</p>
 			<p className="status-bar-field">
 				{user === "" ? "No User Logged." : "Logged User: " + user}
 			</p>
 			<p className="status-bar-field text-right">
-				Explore Your Computer : )
+				{user === "" ? "Welcome!" : "Explore Your Computer : D"}
 			</p>
 		</div>
 	);
 }
 
-function Frame({ children }: { children: React.JSX.Element }) {
+export function Frame({ children }: { children: React.JSX.Element }) {
 	return (
-		<div className="window-body">
-			<div className="field-border-disabled h-100 overflow-y-scroll">
+		<div className="window-body mt-1!">
+			<div className="field-border h-100 overflow-y-scroll">
 				{children}
 			</div>
 		</div>
-	);
-}
-
-function Landing({ handleClick }: { handleClick: () => void }) {
-	return (
-		<div className="bg-[url('/landing-bg.jpg')] h-full bg-cover bg-center text-center place-content-end p-8">
-			<h2>
-				<i>welcome</i>
-			</h2>
-			<button onClick={handleClick}>Start Login</button>
-		</div>
-	);
-}
-
-function Login({ handleLogin }: { handleLogin: (user: string) => void }) {
-	return (
-		<div className="h-full flex text-center justify-center-safe place-items-center p-3">
-			<div className="window w-full h-1/2 flex flex-col text-center p-5! gap-3 place-items-center">
-				<p>Login Form:</p>
-				<form
-					className="flex flex-col gap-2 w-full place-items-center"
-					onSubmit={(e: React.SubmitEvent) => {
-						e.preventDefault();
-						handleLogin(e.target.user.value);
-						/* setUser(e.target.user.value);
-						setHomeState("files"); */
-						e.target.reset();
-					}}
-				>
-					<div className="flex justify-between w-1/2">
-						<label>User</label>
-						<input id="user" name="user" type="text" required />
-					</div>
-					<div className="flex justify-between w-1/2">
-						<label>Password</label>
-						<input id="pass" name="pass" type="text" required />
-					</div>
-					<button type="submit">Login</button>
-				</form>
-			</div>
-		</div>
-	);
-}
-
-function Content() {
-	return (
-		<>
-			<p>There's so much room for activities!</p>
-			<p>There's so much room for activities!</p>
-			<p>There's so much room for activities!</p>
-			<p>There's so much room for activities!</p>
-			<p>There's so much room for activities!</p>
-			<p>There's so much room for activities!</p>
-			<p>Work area</p>
-		</>
 	);
 }
