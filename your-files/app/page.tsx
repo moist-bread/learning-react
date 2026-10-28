@@ -3,14 +3,14 @@ import { useState, useContext } from "react";
 import Landing from "./landing";
 import Login from "./login";
 import Files from "./files";
-import { allUsers, UserAccount } from "./user_files";
+import { allUsers, UserAccount, ComputerFiles } from "./user_files";
 import { SelectedIdContext } from "./selectedIdContext";
 
 type homeStates = "landing" | "login" | "files";
 
 export default function Home() {
-	const [homeState, setHomeState] = useState<homeStates>("landing");
-	const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+	const [homeState, setHomeState] = useState<homeStates>("files");
+	const [selectedUserId, setSelectedUserId] = useState<number | null>(0);
 
 	function handleLogin(user: string, pass: string) {
 		let acc: UserAccount | undefined = undefined;
@@ -19,8 +19,7 @@ export default function Home() {
 
 		let id: number | null = null;
 		if (typeof acc !== "undefined") {
-			if (pass != acc.password)
-				throw new Error();
+			if (pass != acc.password) throw new Error();
 			id = acc.userId;
 			console.log(id);
 			setSelectedUserId(id);
@@ -28,10 +27,17 @@ export default function Home() {
 		} else throw new Error();
 	}
 
-	let children: React.JSX.Element;
+	let children: React.JSX.Element = <></>;
 	switch (homeState) {
 		case "files": {
-			children = <Files />;
+			children = (
+				<Files
+					handleLogout={() => {
+						setHomeState("login");
+						setSelectedUserId(null);
+					}}
+				/>
+			);
 			break;
 		}
 		case "login": {
@@ -139,22 +145,18 @@ export function StatusBar() {
 	const id = useContext(SelectedIdContext);
 
 	let acc: UserAccount | undefined = undefined;
-	if (typeof id === "number") {
-		acc = allUsers.find((u) => u.userId == id);
-		console.log(acc);
-	}
+	if (typeof id === "number") acc = allUsers.find((u) => u.userId == id);
 	let user: string = "";
 	let totalFiles: number = 0;
 	if (typeof acc !== "undefined") {
 		user = acc.userName;
 		totalFiles = acc.fileSystem.length - 1;
-		console.log(user);
 	}
 
 	return (
 		<div className="status-bar">
 			<p className="status-bar-field">
-				{user === "" ? "No Files." : "Total Files: " + totalFiles}
+				{user === "" ? "No Files." : "Total File(s): " + totalFiles}
 			</p>
 			<p className="status-bar-field">
 				{user === "" ? "No User Logged." : "Logged User: " + user}
