@@ -7,11 +7,9 @@ export default function Login({
 	handleLogin: (user: string, pass: string) => void;
 }) {
 	return (
-		<>
-			<Frame>
-				<LoginForm handleLogin={handleLogin} />
-			</Frame>
-		</>
+		<Frame>
+			<LoginForm handleLogin={handleLogin} />
+		</Frame>
 	);
 }
 
@@ -24,11 +22,11 @@ function LoginForm({
 	const [error, setError] = useState<boolean>(false);
 
 	return (
-		<div className="h-full flex text-center justify-center-safe place-items-center px-25">
-			<div className="window w-full h-1/2 flex flex-col text-center p-5! gap-3 place-items-center">
+		<div className="flex h-full place-items-center justify-center-safe text-center">
+			<div className="window flex h-1/2 w-full flex-col place-items-center gap-3 p-5! text-center">
 				<p>Login Form:</p>
 				<form
-					className="flex flex-col gap-2 w-1/2 place-items-center"
+					className="flex w-3xs flex-col place-items-center gap-2"
 					onSubmit={(e: React.SubmitEvent) => {
 						e.preventDefault();
 						try {
@@ -61,7 +59,8 @@ function LoginForm({
 							required
 						/>
 						<button
-							className="min-w-10! min-h-0! p-0!"
+							className="min-h-0! min-w-10! p-0!"
+							type="button"
 							onClick={(e) => {
 								e.preventDefault();
 								setPassVisible(!passVisible);

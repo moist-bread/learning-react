@@ -1,19 +1,22 @@
 import { useState, useContext } from "react";
-import { Frame } from "./page";
+import { Frame, TitleBar } from "./page";
+import { allUsers } from "./user_files";
 import {
-	allUsers,
 	UserAccount,
 	ComputerFiles,
 	FileObjectNode,
-	FileObject,
-	FileType,
-} from "./user_files";
+	ViewType,
+	cords,
+} from "./types";
 import { SelectedIdContext } from "./selectedIdContext";
+import Content from "./content";
 
-type viewType = "list" | "grid" | "large";
+// !! TO DO
+// -- inside _File: no write permission pop up
+// -- inside _Edit: dark mode toggle
 
 export default function Files({ handleLogout }: { handleLogout: () => void }) {
-	const [view, setView] = useState<viewType>("grid");
+	const [view, setView] = useState<ViewType>("Grid");
 	const [pwd, setPwd] = useState<number>(0); // change into a context later?
 	const id = useContext(SelectedIdContext);
 
@@ -72,10 +75,10 @@ function OptionsBar({
 	}
 
 	return (
-		<div className="window flex justify-between m-2 mb-1 p-1! pb-1! place-items-center">
-			<div className="flex gap-2 w-7/8">
+		<div className="window m-2 mb-1 flex place-items-center justify-between p-1! pb-1!">
+			<div className="flex w-7/8 gap-2">
 				<button
-					className="min-w-10! min-h-0! p-0!"
+					className="min-h-0! min-w-10! p-0!"
 					onClick={() => {
 						const parent: FileObjectNode | undefined = files.find(
 							(f) => f.childIds.includes(pwd),
@@ -86,7 +89,7 @@ function OptionsBar({
 					&lt;&lt;
 				</button>
 				<button
-					className="min-w-10! min-h-0! p-0!"
+					className="min-h-0! min-w-10! p-0!"
 					onClick={() => {
 						if (
 							typeof currFolder !== "undefined" &&
@@ -97,20 +100,20 @@ function OptionsBar({
 				>
 					&gt;&gt;
 				</button>
-				<div className="field-border px-2! w-full truncate">{path}</div>
+				<div className="field-border w-full truncate px-2!">{path}</div>
 			</div>
 			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground) ">
+				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground)">
 					_Profile
 				</h5>
-				<div className="window hidden absolute group-hover:block">
+				<div className="window absolute hidden group-hover:block">
 					<p className="px-2">Logged as:</p>
 					<div className="status-bar-field flex flex-row place-items-center">
 						<img src="Smiley face.ico" className="h-3 pl-1" />
 						<p className="px-2">{userName} (You)</p>
 					</div>
 					<div
-						className="flex flex-row place-items-center hover:bg-(--accent) hover:text-(--foreground) hover:cursor-pointer"
+						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
 						onClick={handleLogout}
 					>
 						<img src="Shortcut (big).ico" className="h-3 pl-1" />
@@ -126,180 +129,192 @@ function SettingsBar({
 	view,
 	changeView,
 }: {
-	view: viewType;
-	changeView: (v: viewType) => void;
+	view: ViewType;
+	changeView: (v: ViewType) => void;
 }) {
+	const [popVisibility, setPopVisibility] = useState(false);
+
 	return (
-		<div className="flex ml-2">
+		<div className="ml-2 flex">
+			<div className={popVisibility ? "" : "hidden"}>
+				<PopUp
+					title="Help"
+					text="To be honest there's not much to help with. Figure it out yourself."
+					buttonLeft="What?"
+					buttonRight="Thanks I Guess"
+					close={() => setPopVisibility(false)}
+				/>
+			</div>
 			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground) ">
+				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground)">
 					_File
 				</h5>
-				<div className="window hidden absolute group-hover:block">
-					<p>thing 1</p>
-					<p>thing 2</p>
-					<p>thing 3</p>
+				<div className="window absolute hidden group-hover:block">
+					<div
+						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
+						/* onClick={() => changeView(label)} */
+					>
+						<img src={"Light" + ".ico"} className="h-3 pl-1" />
+						<p className="px-2">
+							New Folder{view === "Grid" ? " ✓" : ""}
+						</p>
+					</div>
+					<div
+						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
+						/* onClick={() => changeView(label)} */
+					>
+						<img src={"Dark" + ".ico"} className="h-3 pl-1" />
+						<p className="px-2">
+							New File{view === "Grid" ? " ✓" : ""}
+						</p>
+					</div>
+					<div
+						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
+						/* onClick={() => changeView(label)} */
+					>
+						<img src={"Dark" + ".ico"} className="h-3 pl-1" />
+						<p className="px-2">
+							Open With...{view === "Grid" ? " ✓" : ""}
+						</p>
+					</div>
 				</div>
 			</div>
 			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground) ">
+				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground)">
 					_Edit
 				</h5>
-			</div>
-			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground) ">
-					_View
-				</h5>
-				<div className="window hidden absolute group-hover:block">
+				<div className="window absolute hidden group-hover:block">
 					<div
-						className="flex flex-row place-items-center hover:bg-(--accent) hover:text-(--foreground) hover:cursor-pointer"
-						onClick={() => changeView("list")}
+						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
+						/* onClick={() => changeView(label)} */
 					>
-						<img src="106.ico" className="h-3 pl-1" />
+						<img src={"Dark" + ".ico"} className="h-3 pl-1" />
 						<p className="px-2">
-							List View{view === "list" ? " ✓" : ""}
+							Dark Mode{view === "Grid" ? " ✓" : ""}
 						</p>
 					</div>
 					<div
-						className="flex flex-row place-items-center hover:bg-(--accent) hover:text-(--foreground) hover:cursor-pointer"
-						onClick={() => changeView("grid")}
+						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
+						/* onClick={() => changeView(label)} */
 					>
-						<img src="129.ico" className="h-3 pl-1" />
+						<img src={"Light" + ".ico"} className="h-3 pl-1" />
 						<p className="px-2">
-							Grid View{view === "grid" ? " ✓" : ""}
-						</p>
-					</div>
-					<div
-						className="flex flex-row place-items-center hover:bg-(--accent) hover:text-(--foreground) hover:cursor-pointer"
-						onClick={() => changeView("large")}
-					>
-						<img src="528.ico" className="h-3 pl-1" />
-						<p className="px-2">
-							Large View{view === "large" ? " ✓" : ""}
+							Light Mode{view === "Grid" ? " ✓" : ""}
 						</p>
 					</div>
 				</div>
 			</div>
+			<ViewSettings view={view} changeView={changeView} />
 			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground) ">
+				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground)">
 					_Help
 				</h5>
+				<div className="window absolute hidden group-hover:block">
+					<p className="px-2">File Explorer Version:</p>
+					<div className="status-bar-field flex flex-row place-items-center">
+						<img src="Earth (16 colors).ico" className="h-3 pl-1" />
+						<p className="px-2">0.0.0.1</p>
+					</div>
+					<div className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)">
+						<img src="Help page.ico" className="h-3 pl-1" />
+						<p
+							onClick={() => setPopVisibility(true)}
+							className="px-2"
+						>
+							Help Me
+						</p>
+					</div>
+				</div>
 			</div>
 		</div>
 	);
 }
 
-function Content({
-	view,
-	files,
-	pwd,
-	changePwd,
+function PopUp({
+	title,
+	text,
+	buttonLeft,
+	buttonRight,
+	close,
 }: {
-	view: viewType;
-	files: ComputerFiles;
-	pwd: number;
-	changePwd: (n: number) => void;
+	title: string;
+	text: string;
+	buttonLeft: string;
+	buttonRight: string;
+	close: () => void;
 }) {
-	const currRoot: FileObjectNode | undefined = files.find((f) => f.id == pwd);
-	let filesToDispaly: ComputerFiles = [];
-	if (typeof currRoot !== "undefined") {
-		filesToDispaly = files.filter((f) => {
-			if (currRoot.childIds.includes(f.id)) return f;
-		});
-	}
-
-	let display = filesToDispaly.map((f) => {
-		return (
-			<div
-				key={f.id}
-				className="flex flex-col text-center p-2 h-20 w-17 hover:bg-(--accent) hover:text-(--foreground) hover:cursor-pointer active:bg-(--accent)/75 active:bg-(--accent)/75 active:inset-ring-2 active:inset-ring-(--foreground)/50"
-				onDoubleClick={() => changePwd(f.id)}
-			>
-				<img
-					src={f.file.type + ".ico"}
-					className="h-10 w-10 place-self-center"
+	return (
+		<div className="absolute top-0 left-0 flex h-full w-full justify-center bg-(--background)/75">
+			<div className="window h-1/6 w-1/4 min-w-xs place-self-center">
+				<TitleBar
+					title={title}
+					changePosition={(p: cords) => {
+						return;
+					}}
 				/>
-				<p className="text-sm truncate">{f.file.name}</p>
+				<div className="m-3">
+					<p className="text-sm">{text}</p>
+					<div className="mt-3 flex justify-end gap-3">
+						<button onClick={() => close()}>{buttonLeft}</button>
+						<button onClick={() => close()}>{buttonRight}</button>
+					</div>
+				</div>
 			</div>
-		);
-	});
-
-	if (display.length === 0) {
-		if (typeof currRoot === "undefined" || currRoot.file.type === "folder")
-			display = [
-				<div
-					key={0}
-					className="w-full mt-5 text-center place-self-center justify-center"
-				>
-					<p className="text-xl text-(--accent)">Empty Folder...</p>
-				</div>,
-			];
-		else display = [<FileFocus key={0} file={currRoot.file} />];
-	}
-
-	return <div className="m-2 flex flex-wrap">{display}</div>;
+		</div>
+	);
 }
 
-function FileFocus({ file }: { file: FileObject }) {
-	let size: number = file.size;
-	let measureSize: "byte(s)" | "kb(s)" | "mb(s)" | "Gb(s)" = "byte(s)";
-
-	if (size >= 1073741824) {
-		size = Math.floor(size / 1073741824);
-		measureSize = "Gb(s)";
-	} else if (size >= 1048576) {
-		size = Math.floor(size / 1048576);
-		measureSize = "mb(s)";
-	} else if (size >= 1024) {
-		size = Math.floor(size / 1024);
-		measureSize = "kb(s)";
-	}
-
-	let modTime: number = file.lastModified;
-	let measureTime: "second(s)" | "minute(s)" | "hour(s)" | "day(s)" =
-		"second(s)";
-
-	if (modTime >= 86400) {
-		modTime = Math.floor(modTime / 86400);
-		measureTime = "day(s)";
-	} else if (modTime >= 3600) {
-		modTime = Math.floor(modTime / 3600);
-		measureTime = "hour(s)";
-	} else if (modTime >= 60) {
-		modTime = Math.floor(modTime / 60);
-		measureTime = "minute(s)";
-	}
-
+function ViewSettings({
+	view,
+	changeView,
+}: {
+	view: ViewType;
+	changeView: (v: ViewType) => void;
+}) {
 	return (
-		<div className="justify-center-safe content-center h-full w-full">
-			<div className="flex flex-col text-wrap justify-center-safe text-center p-5">
-				<img
-					src={file.type + ".ico"}
-					className="h-50 w-50 place-self-center"
+		<div className="group">
+			<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground)">
+				_View
+			</h5>
+			<div className="window absolute hidden group-hover:block">
+				<ViewChangeButton
+					view={view}
+					label="List"
+					changeView={changeView}
 				/>
-				<div className="flex flex-row justify-center-safe m-2">
-					<p className="text-lg text-(--accent) mr-2">File Name:</p>
-					<p className="text-lg">{file.name}</p>
-				</div>
-				<div className="flex flex-row justify-center-safe">
-					<p className="text-base text-(--accent) mr-2">Type:</p>
-					<p className="text-base">{file.type}</p>
-				</div>
-				<div className="flex flex-row justify-center-safe">
-					<p className="text-base text-(--accent) mr-2">Size:</p>
-					<p className="text-base">
-						{size} {measureSize}
-					</p>
-				</div>
-				<div className="flex flex-row justify-center-safe">
-					<p className="text-base text-(--accent) mr-2">
-						Last Modified:
-					</p>
-					<p className="text-base">
-						{modTime} {measureTime} ago
-					</p>
-				</div>
+				<ViewChangeButton
+					view={view}
+					label="Grid"
+					changeView={changeView}
+				/>
+				<ViewChangeButton
+					view={view}
+					label="Large"
+					changeView={changeView}
+				/>
 			</div>
+		</div>
+	);
+}
+
+function ViewChangeButton({
+	view,
+	label,
+	changeView,
+}: {
+	view: ViewType;
+	label: ViewType;
+	changeView: (v: ViewType) => void;
+}) {
+	return (
+		<div
+			className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
+			onClick={() => changeView(label)}
+		>
+			<img src={label + ".ico"} className="h-3 pl-1" />
+			<p className="px-2">
+				{label} View{view === label ? " ✓" : ""}
+			</p>
 		</div>
 	);
 }

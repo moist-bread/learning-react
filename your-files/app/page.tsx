@@ -3,7 +3,8 @@ import { useState, useContext } from "react";
 import Landing from "./landing";
 import Login from "./login";
 import Files from "./files";
-import { allUsers, UserAccount, ComputerFiles } from "./user_files";
+import { allUsers } from "./user_files";
+import { UserAccount, cords } from "./types";
 import { SelectedIdContext } from "./selectedIdContext";
 
 type homeStates = "landing" | "login" | "files";
@@ -55,10 +56,6 @@ export default function Home() {
 	);
 }
 
-type cords = {
-	x: number | null;
-	y: number | null;
-};
 
 function Window({
 	children,
@@ -171,7 +168,7 @@ export function StatusBar() {
 export function Frame({ children }: { children: React.JSX.Element }) {
 	return (
 		<div className="window-body mt-1!">
-			<div className="field-border h-100 overflow-y-scroll">
+			<div className="field-border h-100 overflow-y-auto">
 				{children}
 			</div>
 		</div>

@@ -12,7 +12,7 @@ export default function Landing({ handleClick }: { handleClick: () => void }) {
 
 function Welcome({ handleClick }: { handleClick: () => void }) {
 	return (
-		<div className="bg-[url('clouds.jpg')] flex flex-col h-full bg-cover bg-center justify-center-safe place-items-center  p-8 gap-5">
+		<div className="flex h-full flex-col place-items-center justify-center-safe gap-5 bg-[url('clouds.jpg')] bg-cover bg-center p-8">
 			<h2>
 				<i>welcome</i>
 			</h2>

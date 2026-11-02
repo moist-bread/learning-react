@@ -1,35 +1,4 @@
-export interface UserAccount {
-	userId: number;
-	userName: string;
-	password: string;
-	fileSystem: ComputerFiles;
-}
-
-export type ComputerFiles = Array<FileObjectNode>;
-
-export type FileObjectNode = {
-	id: number;
-	file: FileObject;
-	childIds: Array<number>;
-};
-
-export interface FileObject {
-	name: string;
-	type: FileType;
-	size: number;
-	lastModified: number;
-}
-
-export type FileType =
-	| "epub"
-	| "private"
-	| "trash"
-	| "folder"
-	| "video"
-	| "music"
-	| "text"
-	| "program"
-	| "default";
+import { ComputerFiles, UserAccount } from "./types";
 
 const bananaComputer: ComputerFiles = [
 	{
@@ -39,17 +8,32 @@ const bananaComputer: ComputerFiles = [
 	},
 	{
 		id: 1,
-		file: { name: "bomdiaa", type: "folder", size: 1000, lastModified: 500 },
+		file: {
+			name: "bomdiaa",
+			type: "folder",
+			size: 1000,
+			lastModified: 500,
+		},
 		childIds: [2],
 	},
 	{
 		id: 2,
-		file: { name: "bomdiabaaaaaaaaaaaa", type: "folder", size: 1000, lastModified: 500 },
+		file: {
+			name: "bomdiabaaaaaaaaaaaa",
+			type: "folder",
+			size: 1000,
+			lastModified: 500,
+		},
 		childIds: [3],
 	},
 	{
 		id: 3,
-		file: { name: "bomdiac", type: "folder", size: 1000, lastModified: 500 },
+		file: {
+			name: "bomdiac",
+			type: "folder",
+			size: 1000,
+			lastModified: 500,
+		},
 		childIds: [],
 	},
 	{
