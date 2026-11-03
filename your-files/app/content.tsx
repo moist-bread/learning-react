@@ -1,19 +1,19 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { ComputerFiles, FileObjectNode, FileObject, ViewType } from "./types";
-import { SelectedIdContext } from "./selectedIdContext";
+import { ViewContext } from "./contexts/viewContext";
 
 export default function Content({
-	view,
 	files,
 	pwd,
 	changePwd,
 }: {
-	view: ViewType;
 	files: ComputerFiles;
 	pwd: number;
 	changePwd: (n: number) => void;
 }) {
+	const view: ViewType = useContext(ViewContext);
 	const currRoot: FileObjectNode | undefined = files.find((f) => f.id == pwd);
+
 	let filesToDispaly: ComputerFiles = [];
 	if (typeof currRoot !== "undefined") {
 		filesToDispaly = files.filter((f) => {
@@ -27,7 +27,7 @@ export default function Content({
 				return (
 					<div
 						key={f.id}
-						className="flex w-full flex-row gap-3 px-2 py-1 text-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground) active:bg-(--accent)/75 active:inset-ring-2 active:inset-ring-(--foreground)/50"
+						className="flex w-full flex-row gap-3 px-2 py-1 text-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light) active:bg-(--accent)/75 active:inset-ring-2 active:inset-ring-(--light)/50"
 						onDoubleClick={() => changePwd(f.id)}
 					>
 						<div className="flex w-full flex-row justify-between gap-2">
@@ -56,7 +56,7 @@ export default function Content({
 				return (
 					<div
 						key={f.id}
-						className="flex h-20 w-17 flex-col p-2 text-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground) active:bg-(--accent)/75 active:inset-ring-2 active:inset-ring-(--foreground)/50"
+						className="flex h-20 w-17 flex-col p-2 text-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light) active:bg-(--accent)/75 active:inset-ring-2 active:inset-ring-(--light)/50"
 						onDoubleClick={() => changePwd(f.id)}
 					>
 						<img
@@ -70,7 +70,7 @@ export default function Content({
 				return (
 					<div
 						key={f.id}
-						className="flex size-80 flex-col gap-5 p-8 text-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground) active:bg-(--accent)/75 active:inset-ring-2 active:inset-ring-(--foreground)/50"
+						className="flex size-80 flex-col gap-5 p-8 text-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light) active:bg-(--accent)/75 active:inset-ring-2 active:inset-ring-(--light)/50"
 						onDoubleClick={() => changePwd(f.id)}
 					>
 						<img

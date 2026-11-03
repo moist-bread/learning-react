@@ -1,3 +1,7 @@
+export type homeStates = "landing" | "login" | "files";
+
+export type LogAction = { type: "logout" } | { type: "login"; id: number };
+
 export interface UserAccount {
 	userId: number;
 	userName: string;

@@ -1,36 +1,51 @@
 @import "tailwindcss";
 
-:root {
-	--background: #ffffff;
-	--foreground: #171717;
-	--accent: #009999;
-	--highlight: #0000ce;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--background: #0a0a0a;
-		--foreground: #ededed;
-		--accent: #000080;
-		--highlight: #008080;
-	}
+:root {
+	--light: #ededed;
+	--dark: #141414;
+	--highlight: #009999;
+	--accent: #000080;
+	/* --dark-grey: grey;
+	--grey: silver;
+	--light-grey: #fff; */
+	--dark-grey: #464646;
+	--grey: #818181;
+	--light-grey: #c0c0c0;
 }
 
 @theme inline {
-	--color-background: var(--background);
-	--color-foreground: var(--foreground);
 	--font-mono: var(--font-roboto-mono);
 	--font-sans: var(--font-roboto-sans);
 	--font-symbol: var(--font-noto-sans-symbols);
 }
 
-body {
-	background: var(--background);
-	color: var(--foreground);
-}
+html.dark {
+	body {
+		background-color: var(--dark) !important;
+		color: black !important;
+	}
+	.status-bar-field {
+		box-shadow:
+			inset -1px -1px #dfdfdf,
+			inset 1px 1px var(--dark-grey) !important;
+	}
 
-input[type="number"] {
-	-webkit-appearance: textfield;
-	-moz-appearance: textfield;
-	appearance: textfield;
+	.window {
+		background-color: var(--grey) !important;
+	}
+
+	button {
+		background-color: var(--grey) !important;
+		color: black !important;
+	}
+
+	.field-border {
+		background-color: var(--light-grey) !important;
+	}
+
+	input {
+		background-color: var(--light-grey) !important;
+	}
 }

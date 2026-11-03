@@ -1,61 +1,116 @@
 "use client";
-import { useState, useContext } from "react";
+import { useState, useContext, useReducer, useEffect } from "react";
 import Landing from "./landing";
 import Login from "./login";
 import Files from "./files";
 import { allUsers } from "./user_files";
-import { UserAccount, cords } from "./types";
-import { SelectedIdContext } from "./selectedIdContext";
-
-type homeStates = "landing" | "login" | "files";
+import { homeStates, LogAction, UserAccount, cords } from "./types";
+import {
+	LoggedIdContext,
+	HandleLogoutContext,
+	HandleLoginContext,
+} from "./contexts/logContext";
+import {
+	DarkModeContext,
+	SetDarkModeContext,
+} from "./contexts/darkModeContext";
 
 export default function Home() {
-	const [homeState, setHomeState] = useState<homeStates>("files");
-	const [selectedUserId, setSelectedUserId] = useState<number | null>(0);
+	const [homeState, setHomeState] = useState<homeStates>("landing");
+	const [loggedId, dispatch] = useReducer(loggedReducer, null);
+	const [darkMode, setDarkMode] = useState<boolean | null>(null);
 
-	function handleLogin(user: string, pass: string) {
-		let acc: UserAccount | undefined = undefined;
-		acc = allUsers.find((u) => u.userName === user);
-		console.log(acc);
+	useEffect(() => {
+		if (darkMode === null)
+			setDarkMode(
+				window.matchMedia("(prefers-color-scheme: dark)").matches,
+			);
+		document.documentElement.classList.toggle("dark", darkMode === true);
+	}, [darkMode]);
 
-		let id: number | null = null;
-		if (typeof acc !== "undefined") {
-			if (pass != acc.password) throw new Error();
-			id = acc.userId;
-			console.log(id);
-			setSelectedUserId(id);
-			setHomeState("files");
-		} else throw new Error();
-	}
-
-	let children: React.JSX.Element = <></>;
+	let children: React.JSX.Element;
 	switch (homeState) {
 		case "files": {
-			children = (
-				<Files
-					handleLogout={() => {
-						setHomeState("login");
-						setSelectedUserId(null);
-					}}
-				/>
-			);
+			children = <Files />;
 			break;
 		}
 		case "login": {
-			children = <Login handleLogin={handleLogin} />;
+			children = <Login />;
 			break;
 		}
 		default:
-			children = <Landing handleClick={() => setHomeState("login")} />;
+			children = <Landing />;
 	}
 
 	return (
-		<SelectedIdContext value={selectedUserId}>
+		<ApplyContexts
+			id={loggedId}
+			dispatch={dispatch}
+			changeHomeState={setHomeState}
+			darkMode={darkMode}
+			setDarkMode={setDarkMode}
+		>
 			<Window homeState={homeState}>{children}</Window>
-		</SelectedIdContext>
+		</ApplyContexts>
 	);
 }
 
+function loggedReducer(id: number | null, act: LogAction) {
+	switch (act.type) {
+		case "logout": {
+			return null;
+		}
+		case "login": {
+			return act.id;
+		}
+	}
+}
+
+function ApplyContexts({
+	children,
+	id,
+	dispatch,
+	changeHomeState,
+	darkMode,
+	setDarkMode,
+}: {
+	children: React.JSX.Element;
+	id: number | null;
+	dispatch: React.ActionDispatch<[act: LogAction]>;
+	changeHomeState: React.Dispatch<React.SetStateAction<homeStates>>;
+	darkMode: boolean | null;
+	setDarkMode: React.Dispatch<React.SetStateAction<boolean | null>>;
+}) {
+	function handleLogin(user: string, pass: string) {
+		let acc: UserAccount | undefined = undefined;
+		acc = allUsers.find((u) => u.userName === user);
+
+		if (typeof acc !== "undefined") {
+			if (pass != acc.password) throw new Error();
+			dispatch({ type: "login", id: acc.userId });
+			changeHomeState("files");
+		} else throw new Error();
+	}
+
+	function handleLogout() {
+		changeHomeState("login");
+		dispatch({ type: "logout" });
+	}
+
+	return (
+		<LoggedIdContext value={id}>
+			<HandleLogoutContext value={handleLogout}>
+				<HandleLoginContext value={handleLogin}>
+					<DarkModeContext value={darkMode}>
+						<SetDarkModeContext value={setDarkMode}>
+							{children}
+						</SetDarkModeContext>
+					</DarkModeContext>
+				</HandleLoginContext>
+			</HandleLogoutContext>
+		</LoggedIdContext>
+	);
+}
 
 function Window({
 	children,
@@ -139,7 +194,7 @@ export function TitleBar({
 }
 
 export function StatusBar() {
-	const id = useContext(SelectedIdContext);
+	const id = useContext(LoggedIdContext);
 
 	let acc: UserAccount | undefined = undefined;
 	if (typeof id === "number") acc = allUsers.find((u) => u.userId == id);
@@ -168,9 +223,7 @@ export function StatusBar() {
 export function Frame({ children }: { children: React.JSX.Element }) {
 	return (
 		<div className="window-body mt-1!">
-			<div className="field-border h-100 overflow-y-auto">
-				{children}
-			</div>
+			<div className="field-border h-100 overflow-y-auto">{children}</div>
 		</div>
 	);
 }

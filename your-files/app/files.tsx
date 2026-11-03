@@ -8,56 +8,60 @@ import {
 	ViewType,
 	cords,
 } from "./types";
-import { SelectedIdContext } from "./selectedIdContext";
+import { LoggedIdContext } from "./contexts/logContext";
+import { ViewContext, SetViewContext } from "./contexts/viewContext";
+import { HandleLogoutContext } from "./contexts/logContext";
+import {
+	DarkModeContext,
+	SetDarkModeContext,
+} from "./contexts/darkModeContext";
 import Content from "./content";
 
 // !! TO DO
 // -- inside _File: no write permission pop up
-// -- inside _Edit: dark mode toggle
 
-export default function Files({ handleLogout }: { handleLogout: () => void }) {
+export default function Files() {
 	const [view, setView] = useState<ViewType>("Grid");
-	const [pwd, setPwd] = useState<number>(0); // change into a context later?
-	const id = useContext(SelectedIdContext);
+	const [pwd, setPwd] = useState<number>(0);
+	const id = useContext(LoggedIdContext);
 
 	let acc: UserAccount | undefined = undefined;
 	if (typeof id === "number") acc = allUsers.find((u) => u.userId == id);
 	if (typeof acc === "undefined") {
+		const handleLogout = useContext(HandleLogoutContext);
 		handleLogout();
 		return <></>;
 	}
 
 	return (
-		<>
-			<OptionsBar
-				userName={acc.userName}
-				handleLogout={handleLogout}
-				pwd={pwd}
-				changePwd={(n) => setPwd(n)}
-				files={acc.fileSystem}
-			/>
-			<SettingsBar view={view} changeView={setView} />
+		<ViewContext value={view}>
+			<SetViewContext value={setView}>
+				<OptionsBar
+					userName={acc.userName}
+					pwd={pwd}
+					changePwd={(n) => setPwd(n)}
+					files={acc.fileSystem}
+				/>
+				<SettingsBar />
+			</SetViewContext>
 			<Frame>
 				<Content
-					view={view}
 					files={acc.fileSystem}
 					pwd={pwd}
 					changePwd={(n) => setPwd(n)}
 				/>
 			</Frame>
-		</>
+		</ViewContext>
 	);
 }
 
 function OptionsBar({
 	userName,
-	handleLogout,
 	pwd,
 	changePwd,
 	files,
 }: {
 	userName: string;
-	handleLogout: () => void;
 	pwd: number;
 	changePwd: (n: number) => void;
 	files: ComputerFiles;
@@ -103,7 +107,7 @@ function OptionsBar({
 				<div className="field-border w-full truncate px-2!">{path}</div>
 			</div>
 			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground)">
+				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--light)">
 					_Profile
 				</h5>
 				<div className="window absolute hidden group-hover:block">
@@ -113,8 +117,8 @@ function OptionsBar({
 						<p className="px-2">{userName} (You)</p>
 					</div>
 					<div
-						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
-						onClick={handleLogout}
+						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
+						onClick={useContext(HandleLogoutContext)}
 					>
 						<img src="Shortcut (big).ico" className="h-3 pl-1" />
 						<p className="px-2">Log Out</p>
@@ -125,14 +129,11 @@ function OptionsBar({
 	);
 }
 
-function SettingsBar({
-	view,
-	changeView,
-}: {
-	view: ViewType;
-	changeView: (v: ViewType) => void;
-}) {
+function SettingsBar() {
 	const [popVisibility, setPopVisibility] = useState(false);
+	const view: ViewType = useContext(ViewContext);
+	const darkMode: boolean | null = useContext(DarkModeContext);
+	const setDarkMode = useContext(SetDarkModeContext);
 
 	return (
 		<div className="ml-2 flex">
@@ -146,12 +147,12 @@ function SettingsBar({
 				/>
 			</div>
 			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground)">
+				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--light)">
 					_File
 				</h5>
 				<div className="window absolute hidden group-hover:block">
 					<div
-						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
+						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
 						/* onClick={() => changeView(label)} */
 					>
 						<img src={"Light" + ".ico"} className="h-3 pl-1" />
@@ -160,7 +161,7 @@ function SettingsBar({
 						</p>
 					</div>
 					<div
-						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
+						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
 						/* onClick={() => changeView(label)} */
 					>
 						<img src={"Dark" + ".ico"} className="h-3 pl-1" />
@@ -169,7 +170,7 @@ function SettingsBar({
 						</p>
 					</div>
 					<div
-						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
+						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
 						/* onClick={() => changeView(label)} */
 					>
 						<img src={"Dark" + ".ico"} className="h-3 pl-1" />
@@ -180,33 +181,33 @@ function SettingsBar({
 				</div>
 			</div>
 			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground)">
+				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--light)">
 					_Edit
 				</h5>
 				<div className="window absolute hidden group-hover:block">
 					<div
-						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
-						/* onClick={() => changeView(label)} */
+						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
+						onClick={() => setDarkMode(true)}
 					>
 						<img src={"Dark" + ".ico"} className="h-3 pl-1" />
 						<p className="px-2">
-							Dark Mode{view === "Grid" ? " ✓" : ""}
+							Dark Mode{darkMode === true ? " ✓" : ""}
 						</p>
 					</div>
 					<div
-						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
-						/* onClick={() => changeView(label)} */
+						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
+						onClick={() => setDarkMode(false)}
 					>
 						<img src={"Light" + ".ico"} className="h-3 pl-1" />
 						<p className="px-2">
-							Light Mode{view === "Grid" ? " ✓" : ""}
+							Light Mode{darkMode === false ? " ✓" : ""}
 						</p>
 					</div>
 				</div>
 			</div>
-			<ViewSettings view={view} changeView={changeView} />
+			<ViewSettings />
 			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground)">
+				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--light)">
 					_Help
 				</h5>
 				<div className="window absolute hidden group-hover:block">
@@ -215,7 +216,7 @@ function SettingsBar({
 						<img src="Earth (16 colors).ico" className="h-3 pl-1" />
 						<p className="px-2">0.0.0.1</p>
 					</div>
-					<div className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)">
+					<div className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)">
 						<img src="Help page.ico" className="h-3 pl-1" />
 						<p
 							onClick={() => setPopVisibility(true)}
@@ -244,7 +245,7 @@ function PopUp({
 	close: () => void;
 }) {
 	return (
-		<div className="absolute top-0 left-0 flex h-full w-full justify-center bg-(--background)/75">
+		<div className="absolute top-0 left-0 flex h-full w-full justify-center bg-(--dark)/75">
 			<div className="window h-1/6 w-1/4 min-w-xs place-self-center">
 				<TitleBar
 					title={title}
@@ -264,51 +265,28 @@ function PopUp({
 	);
 }
 
-function ViewSettings({
-	view,
-	changeView,
-}: {
-	view: ViewType;
-	changeView: (v: ViewType) => void;
-}) {
+function ViewSettings() {
 	return (
 		<div className="group">
-			<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--foreground)">
+			<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--light)">
 				_View
 			</h5>
 			<div className="window absolute hidden group-hover:block">
-				<ViewChangeButton
-					view={view}
-					label="List"
-					changeView={changeView}
-				/>
-				<ViewChangeButton
-					view={view}
-					label="Grid"
-					changeView={changeView}
-				/>
-				<ViewChangeButton
-					view={view}
-					label="Large"
-					changeView={changeView}
-				/>
+				<ViewChangeButton label="List" />
+				<ViewChangeButton label="Grid" />
+				<ViewChangeButton label="Large" />
 			</div>
 		</div>
 	);
 }
 
-function ViewChangeButton({
-	view,
-	label,
-	changeView,
-}: {
-	view: ViewType;
-	label: ViewType;
-	changeView: (v: ViewType) => void;
-}) {
+function ViewChangeButton({ label }: { label: ViewType }) {
+	const view: ViewType = useContext(ViewContext);
+	const changeView = useContext(SetViewContext);
+
 	return (
 		<div
-			className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--foreground)"
+			className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
 			onClick={() => changeView(label)}
 		>
 			<img src={label + ".ico"} className="h-3 pl-1" />

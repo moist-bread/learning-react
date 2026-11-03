@@ -42,7 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 				/>
 				<link rel="stylesheet" href="https://unpkg.com/98.css" />
 			</head>
-			<body className="flex min-h-full flex-col items-center justify-center-safe py-10 md:px-10">
+			<body className="flex min-h-full flex-col items-center justify-center-safe py-10 md:px-10 bg-(--light)">
 				{children}
 			</body>
 		</html>
