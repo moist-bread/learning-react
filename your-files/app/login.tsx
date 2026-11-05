@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import useSound from "use-sound";
 import { Frame } from "./page";
 import { HandleLoginContext } from "./contexts/logContext";
 
@@ -16,6 +17,9 @@ function LoginForm() {
 	const [passVisible, setPassVisible] = useState<boolean>(false);
 	const [error, setError] = useState<boolean>(false);
 	const handleLogin = useContext(HandleLoginContext);
+	const [playChimes] = useSound("/sound/chimes.mp3", {
+		volume: 0.25,
+	});
 
 	return (
 		<div className="window flex h-1/2 w-full flex-col place-items-center gap-3 p-5! text-center">
@@ -26,6 +30,7 @@ function LoginForm() {
 					e.preventDefault();
 					try {
 						handleLogin(e.target.user.value, e.target.pass.value);
+						playChimes();
 					} catch (err) {
 						setError(true);
 					}

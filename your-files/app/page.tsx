@@ -15,6 +15,10 @@ import {
 	SetDarkModeContext,
 } from "./contexts/darkModeContext";
 
+// !! TO DO
+// -- clean up code
+// -- add more users and their file systems
+
 export default function Home() {
 	const [homeState, setHomeState] = useState<homeStates>("landing");
 	const [loggedId, dispatch] = useReducer(loggedReducer, null);

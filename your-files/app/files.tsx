@@ -1,4 +1,5 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
+import useSound from "use-sound";
 import { Frame, TitleBar } from "./page";
 import { allUsers } from "./user_files";
 import {
@@ -16,9 +17,6 @@ import {
 	SetDarkModeContext,
 } from "./contexts/darkModeContext";
 import Content from "./content";
-
-// !! TO DO
-// -- inside _File: no write permission pop up
 
 export default function Files() {
 	const [view, setView] = useState<ViewType>("Grid");
@@ -66,6 +64,10 @@ function OptionsBar({
 	changePwd: (n: number) => void;
 	files: ComputerFiles;
 }) {
+	const [playChord] = useSound("/sound/chord.mp3", {
+		volume: 0.25,
+	});
+
 	let currPwd: number = pwd;
 	const currFolder: FileObjectNode | undefined = files.find(
 		(f) => f.id == currPwd,
@@ -88,6 +90,7 @@ function OptionsBar({
 							(f) => f.childIds.includes(pwd),
 						);
 						if (typeof parent !== "undefined") changePwd(parent.id);
+						else playChord();
 					}}
 				>
 					&lt;&lt;
@@ -100,6 +103,7 @@ function OptionsBar({
 							currFolder.childIds.length > 0
 						)
 							changePwd(currFolder.childIds[0]);
+						else playChord();
 					}}
 				>
 					&gt;&gt;
@@ -120,7 +124,7 @@ function OptionsBar({
 						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
 						onClick={useContext(HandleLogoutContext)}
 					>
-						<img src="Shortcut (big).ico" className="h-3 pl-1" />
+						<img src="Shortcut.ico" className="h-3 pl-1" />
 						<p className="px-2">Log Out</p>
 					</div>
 				</div>
@@ -131,21 +135,38 @@ function OptionsBar({
 
 function SettingsBar() {
 	const [popVisibility, setPopVisibility] = useState(false);
-	const view: ViewType = useContext(ViewContext);
+	const [popType, setPopType] = useState<"help" | "no perms">("help");
 	const darkMode: boolean | null = useContext(DarkModeContext);
 	const setDarkMode = useContext(SetDarkModeContext);
+	const [playChimes] = useSound("/sound/chimes.mp3", {
+		volume: 0.25,
+	});
+	const [playChord] = useSound("/sound/chord.mp3", {
+		volume: 0.25,
+	});
+
+	useEffect(() => {
+		function handleEscape(event: KeyboardEvent) {
+			if (event.key === "Escape") {
+				setPopVisibility(false);
+			}
+		}
+
+		if (popVisibility) {
+			document.addEventListener("keydown", handleEscape);
+		}
+		return () => {
+			document.removeEventListener("keydown", handleEscape);
+		};
+	}, [popVisibility]);
 
 	return (
 		<div className="ml-2 flex">
-			<div className={popVisibility ? "" : "hidden"}>
-				<PopUp
-					title="Help"
-					text="To be honest there's not much to help with. Figure it out yourself."
-					buttonLeft="What?"
-					buttonRight="Thanks I Guess"
-					close={() => setPopVisibility(false)}
-				/>
-			</div>
+			{!popVisibility ? (
+				<></>
+			) : (
+				<PopUp type={popType} close={() => setPopVisibility(false)} />
+			)}
 			<div className="group">
 				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--light)">
 					_File
@@ -153,30 +174,36 @@ function SettingsBar() {
 				<div className="window absolute hidden group-hover:block">
 					<div
 						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
-						/* onClick={() => changeView(label)} */
+						onClick={() => {
+							setPopVisibility(true);
+							setPopType("no perms");
+							playChord();
+						}}
 					>
-						<img src={"Light" + ".ico"} className="h-3 pl-1" />
-						<p className="px-2">
-							New Folder{view === "Grid" ? " ✓" : ""}
-						</p>
+						<img src={"folder" + ".ico"} className="h-3 pl-1" />
+						<p className="px-2">New Folder</p>
 					</div>
 					<div
 						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
-						/* onClick={() => changeView(label)} */
+						onClick={() => {
+							setPopVisibility(true);
+							setPopType("no perms");
+							playChord();
+						}}
 					>
-						<img src={"Dark" + ".ico"} className="h-3 pl-1" />
-						<p className="px-2">
-							New File{view === "Grid" ? " ✓" : ""}
-						</p>
+						<img src={"default" + ".ico"} className="h-3 pl-1" />
+						<p className="px-2">New File</p>
 					</div>
 					<div
 						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
-						/* onClick={() => changeView(label)} */
+						onClick={() => {
+							setPopVisibility(true);
+							setPopType("no perms");
+							playChord();
+						}}
 					>
-						<img src={"Dark" + ".ico"} className="h-3 pl-1" />
-						<p className="px-2">
-							Open With...{view === "Grid" ? " ✓" : ""}
-						</p>
+						<img src="Open With.ico" className="h-3 pl-1" />
+						<p className="px-2">Open With...</p>
 					</div>
 				</div>
 			</div>
@@ -213,13 +240,17 @@ function SettingsBar() {
 				<div className="window absolute hidden group-hover:block">
 					<p className="px-2">File Explorer Version:</p>
 					<div className="status-bar-field flex flex-row place-items-center">
-						<img src="Earth (16 colors).ico" className="h-3 pl-1" />
+						<img src="Earth.ico" className="h-3 pl-1" />
 						<p className="px-2">0.0.0.1</p>
 					</div>
 					<div className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)">
 						<img src="Help page.ico" className="h-3 pl-1" />
 						<p
-							onClick={() => setPopVisibility(true)}
+							onClick={() => {
+								setPopVisibility(true);
+								setPopType("help");
+								playChimes();
+							}}
 							className="px-2"
 						>
 							Help Me
@@ -232,20 +263,37 @@ function SettingsBar() {
 }
 
 function PopUp({
-	title,
-	text,
-	buttonLeft,
-	buttonRight,
+	type,
 	close,
 }: {
-	title: string;
-	text: string;
-	buttonLeft: string;
-	buttonRight: string;
+	type: "help" | "no perms";
 	close: () => void;
 }) {
+	let title: string;
+	let text: string;
+	let buttonLeft: string;
+	let buttonRight: string;
+
+	switch (type) {
+		case "help":
+			title = "Help";
+			text =
+				"To be honest there's not much to help with. Figure it out yourself.";
+			buttonLeft = "What?";
+			buttonRight = "Thanks I Guess";
+			break;
+
+		default:
+			title = "Action Not Allowed";
+			text =
+				"Unfortunately you do not have the necessary permissions to perform that action.";
+			buttonLeft = "Denial";
+			buttonRight = "Accept";
+			break;
+	}
+
 	return (
-		<div className="absolute top-0 left-0 flex h-full w-full justify-center bg-(--dark)/75">
+		<div className="absolute top-0 left-0 z-1 flex h-full w-full justify-center bg-(--dark)/75">
 			<div className="window h-1/6 w-1/4 min-w-xs place-self-center">
 				<TitleBar
 					title={title}
