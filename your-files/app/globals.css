@@ -7,18 +7,10 @@
 	--dark: #141414;
 	--highlight: #009999;
 	--accent: #000080;
-	/* --dark-grey: grey;
-	--grey: silver;
-	--light-grey: #fff; */
 	--dark-grey: #5f5f5f;
 	--grey: #818181;
 	--light-grey: #c0c0c0;
-}
-
-@theme inline {
-	--font-mono: var(--font-roboto-mono);
-	--font-sans: var(--font-roboto-sans);
-	--font-symbol: var(--font-noto-sans-symbols);
+	--error: #ff0000;
 }
 
 html.dark {

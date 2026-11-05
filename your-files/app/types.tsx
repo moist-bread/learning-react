@@ -26,18 +26,13 @@ export interface FileObject {
 
 export type FileType =
 	| "epub"
+	| "image"
 	| "private"
-	| "trash"
 	| "folder"
 	| "video"
 	| "music"
 	| "text"
 	| "program"
-	| "default";
+	| "pdf";
 
 export type ViewType = "List" | "Grid" | "Large";
-
-export type cords = {
-	x: number | null;
-	y: number | null;
-};

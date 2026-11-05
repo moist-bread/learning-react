@@ -16,10 +16,10 @@ export default function Login() {
 function LoginForm() {
 	const [passVisible, setPassVisible] = useState<boolean>(false);
 	const [error, setError] = useState<boolean>(false);
-	const handleLogin = useContext(HandleLoginContext);
 	const [playChimes] = useSound("/sound/chimes.mp3", {
 		volume: 0.25,
 	});
+	const handleLogin = useContext(HandleLoginContext);
 
 	return (
 		<div className="window flex h-1/2 w-full flex-col place-items-center gap-3 p-5! text-center">
@@ -69,7 +69,7 @@ function LoginForm() {
 				<button type="submit">Login</button>
 			</form>
 			{error && (
-				<p className="text-red-500">
+				<p className="text-(--error) dark:text-red-800">
 					Failed to Login. User or Password was incorrect.
 				</p>
 			)}

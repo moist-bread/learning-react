@@ -1,10 +1,11 @@
 "use client";
-import { useState, useContext, useReducer, useEffect } from "react";
+import { useState, useContext, useReducer, useEffect, useRef } from "react";
+import Draggable from "react-draggable";
+import { homeStates, LogAction, UserAccount } from "./types";
+import { allUsers } from "./user_files";
 import Landing from "./landing";
 import Login from "./login";
 import Files from "./files";
-import { allUsers } from "./user_files";
-import { homeStates, LogAction, UserAccount, cords } from "./types";
 import {
 	LoggedIdContext,
 	HandleLogoutContext,
@@ -15,14 +16,10 @@ import {
 	SetDarkModeContext,
 } from "./contexts/darkModeContext";
 
-// !! TO DO
-// -- clean up code
-// -- add more users and their file systems
-
 export default function Home() {
+	const [darkMode, setDarkMode] = useState<boolean | null>(null);
 	const [homeState, setHomeState] = useState<homeStates>("landing");
 	const [loggedId, dispatch] = useReducer(loggedReducer, null);
-	const [darkMode, setDarkMode] = useState<boolean | null>(null);
 
 	useEffect(() => {
 		if (darkMode === null)
@@ -97,8 +94,8 @@ function ApplyContexts({
 	}
 
 	function handleLogout() {
-		changeHomeState("login");
 		dispatch({ type: "logout" });
+		changeHomeState("login");
 	}
 
 	return (
@@ -123,8 +120,6 @@ function Window({
 	children: React.JSX.Element;
 	homeState: homeStates;
 }) {
-	const [position, setPosition] = useState<cords>({ x: null, y: null });
-
 	let title: string;
 	switch (homeState) {
 		case "files": {
@@ -139,59 +134,46 @@ function Window({
 			title = "Welcome...";
 	}
 
-	// -- not working
-	const stylePos =
-		(typeof position.x === "number" ? " left-" + position.x : "") +
-		(typeof position.y === "number" ? " top-" + position.y : "");
-
+	const nodeRef = useRef(null);
 	return (
-		<div className={"window w-1/2 min-w-sm" + stylePos}>
-			<TitleBar title={title} changePosition={setPosition} />
-			{children}
-			<StatusBar />
-		</div>
+		<Draggable nodeRef={nodeRef} handle=".window-title-bar" bounds="parent">
+			<div
+				ref={nodeRef}
+				id="window"
+				className="window absolute w-1/2 min-w-sm"
+			>
+				<TitleBar title={title} />
+				{children}
+				<StatusBar />
+			</div>
+		</Draggable>
 	);
 }
 
 export function TitleBar({
 	title,
-	changePosition,
+	handleClose = undefined,
 }: {
 	title: string;
-	changePosition: (p: cords) => void;
+	handleClose?: (() => void) | undefined;
 }) {
-	// -- implement window drag by title bar here
+	let handleID: string;
+	if (typeof handleClose === "undefined") handleID = "window-title-bar";
+	else handleID = "pop-title-bar";
+
 	return (
-		<div
-			className="title-bar mb-1"
-			/* onMouseDown={(e) => {
-				console.log("onMouseDown");
-				let cx = e.clientX;
-				let cy = e.clientY;
-				console.log("cx: ", cx);
-				console.log("cy: ", cy);
-				document.onmouseup = () => {
-					document.onmouseup = null;
-					document.onmousemove = null;
-				};
-				document.onmousemove = (e) => {
-					const new_cx: number = e.clientX;
-					const new_cy: number = cy - e.clientY;
-					cx = e.clientX;
-					cy = e.clientY;
-					console.log("new_cx: ", new_cx);
-					console.log("new_cy: ", new_cy);
-					changePosition({ x: 0, y: 0 });
-					console.log("top-[" + new_cy + "px]");
-				};
-			}}
-			onDragEnd={(e) => console.log("onDragEnd")} */
-		>
+		<div className={"title-bar z-1 mb-1 " + handleID}>
 			<div className="title-bar-text">{title}</div>
 			<div className="title-bar-controls">
 				<button aria-label="Minimize" className="minimize"></button>
 				<button aria-label="Maximize" className="maximize"></button>
-				<button aria-label="Close" className="close"></button>
+				<button
+					onClick={() => {
+						if (typeof handleClose !== "undefined") handleClose();
+					}}
+					aria-label="Close"
+					className="close"
+				></button>
 			</div>
 		</div>
 	);
@@ -202,7 +184,7 @@ export function StatusBar() {
 
 	let acc: UserAccount | undefined = undefined;
 	if (typeof id === "number") acc = allUsers.find((u) => u.userId == id);
-	let user: string = "";
+	let user: string | undefined = undefined;
 	let totalFiles: number = 0;
 	if (typeof acc !== "undefined") {
 		user = acc.userName;
@@ -212,13 +194,19 @@ export function StatusBar() {
 	return (
 		<div className="status-bar">
 			<p className="status-bar-field">
-				{user === "" ? "No Files." : "Total File(s): " + totalFiles}
+				{typeof user !== "string"
+					? "No Files."
+					: "Total File(s): " + totalFiles}
 			</p>
 			<p className="status-bar-field">
-				{user === "" ? "No User Logged." : "Logged User: " + user}
+				{typeof user !== "string"
+					? "No User Logged."
+					: "Logged User: " + user}
 			</p>
 			<p className="status-bar-field text-right">
-				{user === "" ? "Welcome!" : "Explore Your Computer : D"}
+				{typeof user !== "string"
+					? "Welcome!"
+					: "Explore Your Computer : D"}
 			</p>
 		</div>
 	);

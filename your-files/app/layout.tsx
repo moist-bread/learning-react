@@ -1,27 +1,5 @@
 import type { Metadata } from "next";
-import {
-	Noto_Sans_Symbols_2,
-	Roboto_Mono,
-	Roboto_Serif,
-} from "next/font/google";
-
 import "./globals.css";
-
-const robotoMono = Roboto_Mono({
-	variable: "--font-roboto-mono",
-	subsets: ["latin"],
-});
-
-const robotoSans = Roboto_Serif({
-	variable: "--font-roboto-sans",
-	subsets: ["latin"],
-});
-
-const notoSansSymbols = Noto_Sans_Symbols_2({
-	variable: "--font-noto-sans-symbols",
-	weight: "400",
-	subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
 	title: "your-files",
@@ -31,10 +9,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
 	return (
-		<html
-			lang="en"
-			className={`${robotoMono.variable} ${robotoSans.variable} ${notoSansSymbols.variable} h-full antialiased`}
-		>
+		<html lang="en" className={`h-full antialiased`}>
 			<head>
 				<meta
 					name="viewport"
@@ -42,7 +17,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 				/>
 				<link rel="stylesheet" href="https://unpkg.com/98.css" />
 			</head>
-			<body className="flex min-h-full flex-col items-center justify-center-safe py-10 md:px-10 bg-(--light)">
+			<body className="flex min-h-full flex-col items-center justify-center-safe bg-(--light) py-5 md:px-5">
 				{children}
 			</body>
 		</html>

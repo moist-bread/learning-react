@@ -1,6 +1,6 @@
-import { Frame } from "./page";
 import { useContext } from "react";
 import useSound from "use-sound";
+import { Frame } from "./page";
 import { HandleLogoutContext } from "./contexts/logContext";
 
 export default function Landing() {

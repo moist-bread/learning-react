@@ -12,6 +12,7 @@
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-draggable": "^4.7.2",
     "use-sound": "^5.0.0"
   },
   "devDependencies": {

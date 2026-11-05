@@ -21,67 +21,27 @@ export default function Content({
 		});
 	}
 
-	let display = filesToDispaly.map((f) => {
-		switch (view) {
-			case "List":
-				return (
-					<div
-						key={f.id}
-						className="flex w-full flex-row gap-3 px-2 py-1 text-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light) active:bg-(--accent)/75 active:inset-ring-2 active:inset-ring-(--light)/50"
-						onDoubleClick={() => changePwd(f.id)}
-					>
-						<div className="flex w-full flex-row justify-between gap-2">
-							<div className="flex w-1/2 flex-row gap-3">
-								<img
-									src={f.file.type + ".ico"}
-									className="size-4 place-self-center"
-								/>
-								<p className="truncate text-left text-sm">
-									{f.file.name}
-								</p>
-							</div>
-							<div className="flex w-1/2 flex-row place-items-center justify-between gap-2">
-								<p>{f.file.type}</p>
-								<p className="text-[10px] lg:text-xs">
-									{convertFileSize(f.file.size)}
-								</p>
-								<p className="text-[10px] lg:text-xs">
-									{convertLastModified(f.file.lastModified)}
-								</p>
-							</div>
-						</div>
-					</div>
-				);
-			case "Grid":
-				return (
-					<div
-						key={f.id}
-						className="flex h-20 w-17 flex-col p-2 text-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light) active:bg-(--accent)/75 active:inset-ring-2 active:inset-ring-(--light)/50"
-						onDoubleClick={() => changePwd(f.id)}
-					>
-						<img
-							src={f.file.type + ".ico"}
-							className="size-10 place-self-center"
+	let display =
+		view === "List"
+			? filesToDispaly.map((f) => {
+					return (
+						<ListViewFile
+							key={f.id}
+							f={f}
+							handleDClick={() => changePwd(f.id)}
 						/>
-						<p className="truncate text-sm">{f.file.name}</p>
-					</div>
-				);
-			default:
-				return (
-					<div
-						key={f.id}
-						className="flex size-80 flex-col gap-5 p-8 text-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light) active:bg-(--accent)/75 active:inset-ring-2 active:inset-ring-(--light)/50"
-						onDoubleClick={() => changePwd(f.id)}
-					>
-						<img
-							src={f.file.type + ".ico"}
-							className="size-50 place-self-center"
+					);
+				})
+			: filesToDispaly.map((f) => {
+					return (
+						<GridViewFile
+							key={f.id}
+							f={f}
+							handleDClick={() => changePwd(f.id)}
+							large={view === "Large"}
 						/>
-						<p className="truncate text-sm">{f.file.name}</p>
-					</div>
-				);
-		}
-	});
+					);
+				});
 
 	if (display.length === 0) {
 		if (typeof currRoot === "undefined" || currRoot.file.type === "folder")
@@ -100,6 +60,74 @@ export default function Content({
 		<div className="m-2 flex flex-wrap">
 			{view === "List" && filesToDispaly.length !== 0 && <ListHeader />}
 			{display}
+		</div>
+	);
+}
+
+function ListViewFile({
+	f,
+	handleDClick,
+}: {
+	f: FileObjectNode;
+	handleDClick: () => void;
+}) {
+	return (
+		<div
+			className="flex w-full flex-row gap-3 px-2 py-1 text-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light) active:bg-(--accent)/75 active:inset-ring-2 active:inset-ring-(--light)/50"
+			onDoubleClick={handleDClick}
+		>
+			<div className="flex w-full flex-row justify-between gap-2">
+				<div className="flex w-1/2 flex-row gap-3">
+					<img
+						src={f.file.type + ".ico"}
+						className="size-4 place-self-center"
+					/>
+					<p className="truncate text-left text-sm">{f.file.name}</p>
+				</div>
+				<div className="flex w-1/2 flex-row place-items-center justify-between gap-2">
+					<p>{f.file.type}</p>
+					<p className="text-[10px] lg:text-xs">
+						{convertFileSize(f.file.size)}
+					</p>
+					<p className="text-[10px] lg:text-xs">
+						{convertLastModified(f.file.lastModified)}
+					</p>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function GridViewFile({
+	f,
+	handleDClick,
+	large,
+}: {
+	f: FileObjectNode;
+	handleDClick: () => void;
+	large: boolean;
+}) {
+	const sizing: string = large ? "size-80 gap-5 p-8" : "h-20 w-17 p-2";
+
+	return (
+		<div
+			className={
+				"flex flex-col text-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light) active:bg-(--accent)/75 active:inset-ring-2 active:inset-ring-(--light)/50 " +
+				sizing
+			}
+			onDoubleClick={handleDClick}
+		>
+			<img
+				src={f.file.type + ".ico"}
+				className={
+					large
+						? "size-50 place-self-center"
+						: "size-10 place-self-center"
+				}
+			/>
+			<p className={large ? "truncate text-sm" : "text-2xs truncate"}>
+				{f.file.name}
+			</p>
 		</div>
 	);
 }

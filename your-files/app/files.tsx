@@ -1,22 +1,13 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import useSound from "use-sound";
-import { Frame, TitleBar } from "./page";
+import { UserAccount, ComputerFiles, FileObjectNode, ViewType } from "./types";
 import { allUsers } from "./user_files";
-import {
-	UserAccount,
-	ComputerFiles,
-	FileObjectNode,
-	ViewType,
-	cords,
-} from "./types";
+import { Frame } from "./page";
+import SettingsBar from "./setting_bar";
+import Content from "./content";
 import { LoggedIdContext } from "./contexts/logContext";
 import { ViewContext, SetViewContext } from "./contexts/viewContext";
 import { HandleLogoutContext } from "./contexts/logContext";
-import {
-	DarkModeContext,
-	SetDarkModeContext,
-} from "./contexts/darkModeContext";
-import Content from "./content";
 
 export default function Files() {
 	const [view, setView] = useState<ViewType>("Grid");
@@ -25,11 +16,7 @@ export default function Files() {
 
 	let acc: UserAccount | undefined = undefined;
 	if (typeof id === "number") acc = allUsers.find((u) => u.userId == id);
-	if (typeof acc === "undefined") {
-		const handleLogout = useContext(HandleLogoutContext);
-		handleLogout();
-		return <></>;
-	}
+	if (typeof acc === "undefined") return <></>;
 
 	return (
 		<ViewContext value={view}>
@@ -110,237 +97,57 @@ function OptionsBar({
 				</button>
 				<div className="field-border w-full truncate px-2!">{path}</div>
 			</div>
-			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--light)">
-					_Profile
-				</h5>
-				<div className="window absolute hidden group-hover:block">
-					<p className="px-2">Logged as:</p>
-					<div className="status-bar-field flex flex-row place-items-center">
-						<img src="Smiley face.ico" className="h-3 pl-1" />
-						<p className="px-2">{userName} (You)</p>
-					</div>
-					<div
-						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
-						onClick={useContext(HandleLogoutContext)}
-					>
-						<img src="Shortcut.ico" className="h-3 pl-1" />
-						<p className="px-2">Log Out</p>
-					</div>
+			<DropDownGroup label="_Profile">
+				<p className="px-2">Logged as:</p>
+				<div className="status-bar-field flex flex-row place-items-center">
+					<img src="Smiley face.ico" className="h-3 pl-1" />
+					<p className="px-2">{userName} (You)</p>
 				</div>
-			</div>
-		</div>
-	);
-}
-
-function SettingsBar() {
-	const [popVisibility, setPopVisibility] = useState(false);
-	const [popType, setPopType] = useState<"help" | "no perms">("help");
-	const darkMode: boolean | null = useContext(DarkModeContext);
-	const setDarkMode = useContext(SetDarkModeContext);
-	const [playChimes] = useSound("/sound/chimes.mp3", {
-		volume: 0.25,
-	});
-	const [playChord] = useSound("/sound/chord.mp3", {
-		volume: 0.25,
-	});
-
-	useEffect(() => {
-		function handleEscape(event: KeyboardEvent) {
-			if (event.key === "Escape") {
-				setPopVisibility(false);
-			}
-		}
-
-		if (popVisibility) {
-			document.addEventListener("keydown", handleEscape);
-		}
-		return () => {
-			document.removeEventListener("keydown", handleEscape);
-		};
-	}, [popVisibility]);
-
-	return (
-		<div className="ml-2 flex">
-			{!popVisibility ? (
-				<></>
-			) : (
-				<PopUp type={popType} close={() => setPopVisibility(false)} />
-			)}
-			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--light)">
-					_File
-				</h5>
-				<div className="window absolute hidden group-hover:block">
-					<div
-						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
-						onClick={() => {
-							setPopVisibility(true);
-							setPopType("no perms");
-							playChord();
-						}}
-					>
-						<img src={"folder" + ".ico"} className="h-3 pl-1" />
-						<p className="px-2">New Folder</p>
-					</div>
-					<div
-						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
-						onClick={() => {
-							setPopVisibility(true);
-							setPopType("no perms");
-							playChord();
-						}}
-					>
-						<img src={"default" + ".ico"} className="h-3 pl-1" />
-						<p className="px-2">New File</p>
-					</div>
-					<div
-						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
-						onClick={() => {
-							setPopVisibility(true);
-							setPopType("no perms");
-							playChord();
-						}}
-					>
-						<img src="Open With.ico" className="h-3 pl-1" />
-						<p className="px-2">Open With...</p>
-					</div>
-				</div>
-			</div>
-			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--light)">
-					_Edit
-				</h5>
-				<div className="window absolute hidden group-hover:block">
-					<div
-						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
-						onClick={() => setDarkMode(true)}
-					>
-						<img src={"Dark" + ".ico"} className="h-3 pl-1" />
-						<p className="px-2">
-							Dark Mode{darkMode === true ? " ✓" : ""}
-						</p>
-					</div>
-					<div
-						className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
-						onClick={() => setDarkMode(false)}
-					>
-						<img src={"Light" + ".ico"} className="h-3 pl-1" />
-						<p className="px-2">
-							Light Mode{darkMode === false ? " ✓" : ""}
-						</p>
-					</div>
-				</div>
-			</div>
-			<ViewSettings />
-			<div className="group">
-				<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--light)">
-					_Help
-				</h5>
-				<div className="window absolute hidden group-hover:block">
-					<p className="px-2">File Explorer Version:</p>
-					<div className="status-bar-field flex flex-row place-items-center">
-						<img src="Earth.ico" className="h-3 pl-1" />
-						<p className="px-2">0.0.0.1</p>
-					</div>
-					<div className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)">
-						<img src="Help page.ico" className="h-3 pl-1" />
-						<p
-							onClick={() => {
-								setPopVisibility(true);
-								setPopType("help");
-								playChimes();
-							}}
-							className="px-2"
-						>
-							Help Me
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
-}
-
-function PopUp({
-	type,
-	close,
-}: {
-	type: "help" | "no perms";
-	close: () => void;
-}) {
-	let title: string;
-	let text: string;
-	let buttonLeft: string;
-	let buttonRight: string;
-
-	switch (type) {
-		case "help":
-			title = "Help";
-			text =
-				"To be honest there's not much to help with. Figure it out yourself.";
-			buttonLeft = "What?";
-			buttonRight = "Thanks I Guess";
-			break;
-
-		default:
-			title = "Action Not Allowed";
-			text =
-				"Unfortunately you do not have the necessary permissions to perform that action.";
-			buttonLeft = "Denial";
-			buttonRight = "Accept";
-			break;
-	}
-
-	return (
-		<div className="absolute top-0 left-0 z-1 flex h-full w-full justify-center bg-(--dark)/75">
-			<div className="window h-1/6 w-1/4 min-w-xs place-self-center">
-				<TitleBar
-					title={title}
-					changePosition={(p: cords) => {
-						return;
-					}}
+				<DropDownButton
+					handleClick={useContext(HandleLogoutContext)}
+					icon="Shortcut"
+					label="Log Out"
 				/>
-				<div className="m-3">
-					<p className="text-sm">{text}</p>
-					<div className="mt-3 flex justify-end gap-3">
-						<button onClick={() => close()}>{buttonLeft}</button>
-						<button onClick={() => close()}>{buttonRight}</button>
-					</div>
-				</div>
-			</div>
+			</DropDownGroup>
 		</div>
 	);
 }
 
-function ViewSettings() {
+export function DropDownGroup({
+	children,
+	label,
+}: {
+	children: Array<React.JSX.Element>;
+	label: string;
+}) {
 	return (
 		<div className="group">
 			<h5 className="px-1 group-hover:bg-(--accent) group-hover:text-(--light)">
-				_View
+				{label}
 			</h5>
-			<div className="window absolute hidden group-hover:block">
-				<ViewChangeButton label="List" />
-				<ViewChangeButton label="Grid" />
-				<ViewChangeButton label="Large" />
+			<div className="window absolute hidden min-w-20 group-hover:block">
+				{children}
 			</div>
 		</div>
 	);
 }
 
-function ViewChangeButton({ label }: { label: ViewType }) {
-	const view: ViewType = useContext(ViewContext);
-	const changeView = useContext(SetViewContext);
-
+export function DropDownButton({
+	handleClick,
+	icon,
+	label,
+}: {
+	handleClick: () => void;
+	icon: string;
+	label: string;
+}) {
 	return (
 		<div
 			className="flex flex-row place-items-center hover:cursor-pointer hover:bg-(--accent) hover:text-(--light)"
-			onClick={() => changeView(label)}
+			onClick={handleClick}
 		>
-			<img src={label + ".ico"} className="h-3 pl-1" />
-			<p className="px-2">
-				{label} View{view === label ? " ✓" : ""}
-			</p>
+			<img src={icon + ".ico"} className="h-3 pl-1" />
+			<p className="px-2">{label}</p>
 		</div>
 	);
 }
