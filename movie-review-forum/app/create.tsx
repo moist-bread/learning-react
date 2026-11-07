@@ -53,17 +53,14 @@ function CreateForm({
 			method="post"
 			onSubmit={(e: React.SubmitEvent) => {
 				e.preventDefault();
-				const form = e.target;
-				const formData = new FormData(form);
-				const formJson = Object.fromEntries(formData.entries());
 				createReview({
 					id: 0,
 					posterPath: "movieposter.jpg",
-					movieName: formJson.mname.toString(),
-					movieYear: parseInt(formJson.myear.toString()),
-					rating: parseInt(formJson.rating.toString()),
-					review: formJson.review.toString(),
-					reviewerName: formJson.aname.toString(),
+					movieName: e.target.mname.value,
+					movieYear: parseInt(e.target.myear.value),
+					rating: parseInt(e.target.rating.value),
+					review: e.target.review.value,
+					reviewerName: e.target.aname.value,
 					hype: 0,
 				});
 				e.target.reset();
