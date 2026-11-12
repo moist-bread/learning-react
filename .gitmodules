@@ -1,0 +1,3 @@
+[submodule "react-sweeper"]
+	path = react-sweeper
+	url = https://github.com/moist-bread/react-sweeper
